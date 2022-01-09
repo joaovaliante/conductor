@@ -1,0 +1,8 @@
+ingress:
+  defaultBackend:
+    enabled: true
+
+  tls:
+    enabled: false
+
+  hosts:

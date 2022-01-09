@@ -1,0 +1,22 @@
+trigger: none
+
+variables:
+  - group: kubernetes-base
+  - group: production-azure
+  - group: production-kubernetes
+  - group: csp-jarvis
+
+stages:
+  - template: ../../../../templates/terraform.yaml
+    parameters:
+      directory: ./terraform/$(CLOUD)/kubernetes/$(PROJECT_NAME)
+      jobEnvironment: "$(JOB_ENVIRONMENT)"
+      environment: "$(ENVIRONMENT)"
+      stateName: "Infrastructure"
+
+  - template: ../../../../templates/terraform.yaml
+    parameters:
+      directory: ./terraform/application/$(PROJECT_NAME)
+      jobEnvironment: "$(JOB_ENVIRONMENT)"
+      environment: "$(ENVIRONMENT)"
+      stateName: "Application"

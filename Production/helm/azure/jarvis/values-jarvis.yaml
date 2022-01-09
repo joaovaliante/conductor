@@ -1,0 +1,14 @@
+api:
+  service:
+    annotations: 
+      service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+authorize:
+  service:
+    annotations:
+      service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+management:
+  service:
+    annotations:
+      service.beta.kubernetes.io/azure-load-balancer-internal: "true"

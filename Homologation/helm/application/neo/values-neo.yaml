@@ -1,0 +1,38 @@
+image: ${image}
+version: ${version}
+
+enviroments:
+  values:
+    SERVER_FORWARD-HEADERS-STRATEGY : NONE
+    SPRING_REDIS_HOST: redis.neo
+    SPRING_DATASOURCE_URL: ${spring_datasource_url}
+    SPRING_DATASOURCE_USERNAME: ${spring_datasoure_username}
+  secrets:
+    SPRING_DATASOURCE_PASSWORD: ${spring_datasource_password}
+
+service:
+  type: LoadBalancer
+  annotations:
+    cloud.google.com/load-balancer-type: Internal
+    networking.gke.io/internal-load-balancer-allow-global-access: "true"   
+
+registry:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: ${registry_password}
+
+
+livenessProbe:
+  httpGet:
+    path: /v1/api/monitor/health/liveness
+    port: http
+  initialDelaySeconds: 60
+  failureThreshold: 30
+  periodSeconds: 10
+
+redis:
+  enabled: true
+  name: redis
+  namespace:
+    create: false

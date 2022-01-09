@@ -1,0 +1,148 @@
+parameters:
+  containerImage: desenvolvimento.azurecr.io/cdt-iac:latest
+  containerImageEndpoint: DevCR
+  jobEnvironment: Development
+  environment:
+  poolName: "AZ1P-AUTOMATION-AGENTPOOL"
+  gcpCredential: credential.json
+  apply: true
+  stateName:
+  directory: 
+  preSteps: []
+  postSteps: []
+  arguments: []
+  beforeExecute:
+
+stages:
+  - stage: 'plan_${{ lower(parameters.stateName) }}'
+    condition: and(always(), ne(failed(), true))
+    displayName: '${{ parameters.stateName }} Plan'
+    jobs:
+      - job: planJob
+        displayName: Planning
+        pool:
+          name: ${{ parameters.poolName }}
+        container:
+          image: ${{ parameters.containerImage }}
+          endpoint: ${{ parameters.containerImageEndpoint }}
+        steps:
+          - checkout: self
+
+          - ${{ parameters.preSteps }}
+
+          - task: DownloadSecureFile@1
+            name: gcpCredential
+            displayName: 'Download Google Credential'
+            inputs:
+              secureFile: 'credential.json'
+
+          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+            displayName: 'Setting secret values'
+            inputs:
+              rootDirectory: './helm'
+              actionOnMissing: silently
+              targetFiles: '**/*.yaml'      
+
+          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+            displayName: 'Setting terraform secret values ${{ parameters.directory }}'
+            inputs:
+              rootDirectory: '${{ parameters.directory }}'
+              actionOnMissing: silently
+              targetFiles: '**/variables.tf'                 
+        
+          - script: |
+              cd ${{ parameters.directory }}
+              terraform init -backend-config=config/backend-${{ parameters.environment }}.conf 
+              terraform validate 
+            displayName: 'Terraform Init'
+            env:
+              GOOGLE_APPLICATION_CREDENTIALS: $(gcpCredential.secureFilePath)
+
+          - script: |
+              echo "##vso[task.setvariable variable=HAS_CHANGE;isOutput=true]true"
+              ${{ parameters.beforeExecute }}
+
+              cd ${{ parameters.directory }}
+              terraform plan -var-file=config/${{ parameters.environment }}.tfvars -out "plan.tfplan" ${{ join(' ',parameters.arguments) }} | tee output.file
+              if grep -q "No changes." output.file; then
+                echo "##vso[task.setvariable variable=HAS_CHANGE;isOutput=true]false"
+              fi              
+            displayName: 'Terraform Plan'
+            name: plan_task
+            env:
+              GOOGLE_APPLICATION_CREDENTIALS: $(gcpCredential.secureFilePath)
+
+          - publish: ${{ parameters.directory }}/plan.tfplan
+            artifact: "plan_${{ lower(parameters.stateName) }}"
+            displayName: 'Store plan file'
+
+          - ${{ parameters.postSteps }}           
+
+  - stage: 'apply_${{ lower(parameters.stateName) }}'
+    displayName: '${{ parameters.stateName }} Apply'
+    dependsOn: 'plan_${{ lower(parameters.stateName) }}'
+    condition: and(ne(failed(), true), eq(${{ parameters.apply }}, true), eq(dependencies.plan_${{ lower(parameters.stateName) }}.outputs['planJob.plan_task.HAS_CHANGE'], 'true'))
+    jobs:
+      - deployment: applyJob
+        displayName: Applying
+        environment: ${{ parameters.jobEnvironment }}
+        pool:
+          name: ${{ parameters.poolName }}
+        container:
+          image: ${{ parameters.containerImage }}
+          endpoint: ${{ parameters.containerImageEndpoint }}
+        variables:
+            myVarFromJobA: $[ stageDependencies.plan_${{ lower(parameters.stateName) }}.planJob.outputs['plan_task.HAS_CHANGE'] ]
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self 
+
+                - ${{ parameters.preSteps }}
+
+                - task: DownloadSecureFile@1
+                  name: gcpCredential
+                  displayName: 'Download Google Credential'
+                  condition: and(succeeded(), ne('${{ parameters.gcpCredential }}', ''))
+                  inputs:
+                    secureFile: 'credential.json'
+
+                - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+                  displayName: 'Setting secret values'
+                  inputs:
+                    rootDirectory: './helm'
+                    actionOnMissing: silently
+                    targetFiles: '**/*.yaml'      
+
+                - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+                  displayName: 'Setting terraform secret values ${{ parameters.directory }}'
+                  inputs:
+                    rootDirectory: '${{ parameters.directory }}'
+                    actionOnMissing: silently
+                    targetFiles: '**/variables.tf'             
+              
+                - script: |
+                    cd ${{ parameters.directory }} 
+                    terraform init -backend-config=config/backend-${{ parameters.environment }}.conf 
+                  displayName: 'Terraform Init'
+                  env:
+                    GOOGLE_APPLICATION_CREDENTIALS: $(gcpCredential.secureFilePath)
+
+                - task: CopyFiles@2
+                  displayName: 'Copy approved plan'
+                  inputs:
+                    sourceFolder: "$(Pipeline.Workspace)/plan_${{ lower(parameters.stateName) }}"
+                    contents: '**'
+                    targetFolder: ${{ parameters.directory }}                                 
+                    
+                - script: |
+                    ${{ parameters.beforeExecute }}
+                    
+                    cd ${{ parameters.directory }} 
+                    terraform apply -auto-approve "plan.tfplan"
+                  displayName: 'Terraform Apply'
+                  env:
+                    GOOGLE_APPLICATION_CREDENTIALS: $(gcpCredential.secureFilePath)
+                
+                - ${{ parameters.postSteps }}

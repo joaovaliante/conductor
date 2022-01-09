@@ -1,0 +1,22 @@
+gateway:
+  ingress:
+
+    hosts:
+      - url: #{HEIMDALL_DNS}#
+      - url: api.conductor.com.br
+      - url: heimdall.conductor.com.br
+      - url: pernambucanas.conductor.com.br
+    
+    tls:
+      enabled: true
+      hosts:
+        - url: #{HEIMDALL_DNS}#
+          secret: heimdall-cert
+          cert: <setted by terraform>
+          key: <setted by terraform>
+        - url: api.conductor.com.br
+          secret: heimdall-cert
+        - url: heimdall.conductor.com.br
+          secret: heimdall-cert
+        - url: pernambucanas.conductor.com.br
+          secret: heimdall-cert

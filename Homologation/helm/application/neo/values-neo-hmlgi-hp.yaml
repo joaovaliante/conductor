@@ -1,0 +1,38 @@
+image: ${image}
+version: ${version}
+
+enviroments:
+  values:
+    SERVER_FORWARD-HEADERS-STRATEGY : NONE
+    SPRING_REDIS_HOST: redis.sqa-candidate-neo
+    SPRING_DATASOURCE_URL: jdbc:postgresql://pgsql-hmle.vnext.devcdt.com.br:9999/hmle_service_neo?ApplicationName=NEO
+    SPRING_DATASOURCE_USERNAME: hmle_service_neo
+    SPRING_DATASOURCE_PASSWORD: hmle_service_neo
+
+service:
+  type: LoadBalancer  
+
+registry:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: #{REGISTRY_PASSWORD}#
+
+
+livenessProbe:
+  httpGet:
+    path: /v1/api/monitor/health/liveness
+    port: http
+  initialDelaySeconds: 60
+  failureThreshold: 30
+  periodSeconds: 10
+
+autoScale:
+  enabled: true 
+  minReplicas: 1
+
+redis:
+  enabled: true
+  name: redis
+  namespace:
+    create: false

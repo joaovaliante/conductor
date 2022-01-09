@@ -1,0 +1,25 @@
+gateways:
+  istio-ingressgateway:
+    name: istio-ingressgateway
+    
+    rollingMaxSurge: 100%
+    rollingMaxUnavailable: 25%
+    autoscaleEnabled: true
+    autoscaleMin: 3
+    autoscaleMax: 8
+    
+    # podAntiAffinityTermLabelSelector:
+    # - key: app
+    #   operator: In
+    #   values: istio-ingressgateway
+    #   topologyKey: "kubernetes.io/hostname"
+    # - key: app
+    #   operator: In
+    #   values: istio-ingressgateway
+    #   topologyKey: "topology.kubernetes.io/zone"
+
+    ingressPorts:
+    - port: 8090
+      name: odin
+      protocol: TCP
+      targetPort: 8090

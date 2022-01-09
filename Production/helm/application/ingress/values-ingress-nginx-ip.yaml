@@ -1,0 +1,5 @@
+controller:
+  service:
+    loadBalancerIP: ${public_ip}
+    internal:
+      loadBalancerIP: ${private_ip}

@@ -1,0 +1,126 @@
+<policies>
+    <inbound>
+        <set-variable name="requestIpAddress" value="@{
+            string ipAddress = context.Request.IpAddress;
+            if (!String.IsNullOrEmpty(context.Request.Headers.GetValueOrDefault("x-forwarded-for",""))) {
+                ipAddress = context.Request.Headers.GetValueOrDefault("x-forwarded-for","");
+                string[] tokens = ipAddress.Split(':'); 
+                if (tokens.Length == 2) {
+                    ipAddress = tokens[0];
+                }                                    
+            }
+            return ipAddress;
+        }" />
+        <!-- GET QUERY PARAMETER -->
+        <set-variable name="ClientCache" value="@(context.Request.MatchedParameters["id"])" />
+        <!-- GET VALUE ON CACHE -->
+        <cache-lookup-value key="@((string)context.Variables["ClientCache"])" variable-name="client" caching-type="internal" />
+        <!-- CHECK IF VALUE EXIST -->
+        <choose>
+            <when condition="@(!(bool)context.Variables.ContainsKey("client"))">
+                <cache-lookup-value key="@((string)context.Variables["ClientCache"])" variable-name="client" caching-type="external" />
+            </when>
+        </choose>
+        <choose>
+            <when condition="@(!(bool)context.Variables.ContainsKey("client"))">
+                <!-- RETURN NOT FOUND -->
+                <set-variable name="responseCode" value="404" />
+                <set-variable name="responseReason" value="Not Found" />
+            </when>
+            <otherwise>
+                <!-- DELETE KEY -->
+                <cache-remove-value key="@((string)context.Variables["ClientCache"])" caching-type="internal" />
+                <cache-remove-value key="@((string)context.Variables["ClientCache"])" caching-type="external" />
+                <set-variable name="responseCode" value="202" />
+                <set-variable name="responseReason" value="Accepted" />
+            </otherwise>
+        </choose>
+        <log-to-eventhub logger-id="logger-eventhub-cache">@{
+            var clientId = context.Variables.GetValueOrDefault<string>("ClientCache", "");
+            clientId = Regex.Replace(clientId, "^.{1,3}", "*");
+            clientId = Regex.Replace(clientId, ".{1,3}$", "*");
+
+            var headers = new Dictionary<string, string>();
+            foreach (var entry in context.Request.Headers) {
+                var value = entry.Value != null ? String.Join(",", (string[])entry.Value) : null;
+                headers.Add(entry.Key, value);
+            }
+
+            foreach (var key in new string[] { "subscription_key" }) {
+                if (headers.ContainsKey(key)) {
+                    headers[key] = Regex.Replace(headers[key], "^.{1,3}", "*");
+                    headers[key] = Regex.Replace(headers[key], ".{1,3}$", "*");
+                }
+            }            
+
+            var content = new Dictionary<string, object>() {
+                {"errorGateway", false},
+                {"apimRegion", context.Deployment.Region},
+                {"apimName", context.Deployment.ServiceName},
+                {"requestId", context.RequestId}, 
+                {"requestOperationId", context.Operation.Id},
+                {"requestOperationTemplate", context.Operation.UrlTemplate},
+                {"requestMethod", context.Request.Method}, 
+                {"requestHeaders", headers}, 
+                {"requestMatchedParameters", context.Request.MatchedParameters}, 
+                {"requestOriginalUrl", context.Request.OriginalUrl.ToString()}, 
+                {"requestUrl", context.Request.Url.ToString()}, 
+                {"requestClientId", clientId}, 
+                {"requestIpAddress", context.Variables.GetValueOrDefault<string>("requestIpAddress")},
+                {"responseCode", int.Parse(context.Variables.GetValueOrDefault<string>("responseCode"))}, 
+                {"responseReason", context.Variables.GetValueOrDefault<string>("responseReason")}
+            };
+            return JsonConvert.SerializeObject(content);
+        }</log-to-eventhub>            
+        <return-response>
+            <set-status code="@(int.Parse(context.Variables.GetValueOrDefault<string>("responseCode")))" reason="@(context.Variables.GetValueOrDefault<string>("responseReason"))" />
+        </return-response>        
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <log-to-eventhub logger-id="logger-eventhub-cache">@{
+            var clientId = context.Variables.GetValueOrDefault<string>("ClientCache", "");
+            clientId = Regex.Replace(clientId, "^.{1,3}", "*");
+            clientId = Regex.Replace(clientId, ".{1,3}$", "*");
+
+            var headers = new Dictionary<string, string>();
+            foreach (var entry in context.Request.Headers) {
+                var value = entry.Value != null ? String.Join(",", (string[])entry.Value) : null;
+                headers.Add(entry.Key, value);
+            }
+
+            foreach (var key in new string[] { "subscription_key" }) {
+                if (headers.ContainsKey(key)) {
+                    headers[key] = Regex.Replace(headers[key], "^.{1,3}", "*");
+                    headers[key] = Regex.Replace(headers[key], ".{1,3}$", "*");
+                }
+            }
+
+            var content = new Dictionary<string, object>() {
+                {"errorGateway", true}, 
+                {"apimRegion", context.Deployment.Region},
+                {"apimName", context.Deployment.ServiceName},
+                {"requestId", context.RequestId}, 
+                {"requestOperationId", context.Operation.Id},
+                {"requestOperationTemplate", context.Operation.UrlTemplate},
+                {"requestMethod", context.Request.Method}, 
+                {"requestHeaders", headers}, 
+                {"requestMatchedParameters", context.Request.MatchedParameters}, 
+                {"requestUrl", context.Request.Url.ToString()}, 
+                {"requestClientId", clientId}, 
+                {"requestIpAddress", context.Variables.GetValueOrDefault<string>("requestIpAddress")},
+                {"responseCode", context.Response.StatusCode}, 
+                {"responseReason", context.Response.StatusReason}, 
+                {"errorReason", context.LastError.Reason}, 
+                {"errorMessage", context.LastError.Message}
+            };
+            return JsonConvert.SerializeObject(content);
+        }</log-to-eventhub>      
+        <base />
+    </on-error>
+</policies>

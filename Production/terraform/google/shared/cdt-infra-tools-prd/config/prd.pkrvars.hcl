@@ -1,0 +1,5 @@
+project               = "cdt-infra-tools-prd"
+zone                  = "us-east1-b"
+env_name              = "prd"
+host_subnet_name      = "gcp2p-subnet-infra"
+project_subnet        = "cdt-network-prd"

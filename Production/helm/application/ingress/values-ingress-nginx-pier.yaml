@@ -1,0 +1,16 @@
+fullnameOverride: ingress-nginx-pier
+controller:
+  ingressClass: nginx-pier
+  
+  extraArgs: 
+    http-port: 8081
+
+  containerPort:
+    http: 8081    
+
+  service:
+    ports:
+      http: 8081
+
+  admissionWebhooks:
+    enabled: false #Use the principal admission

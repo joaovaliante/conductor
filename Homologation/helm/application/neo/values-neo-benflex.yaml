@@ -1,0 +1,37 @@
+image: conductorcr.azurecr.io/pierlabs-hmlg/neo-api
+version: ${version}
+
+enviroments:
+  values:
+    SERVER_FORWARD-HEADERS-STRATEGY : NONE
+    SPRING_REDIS_HOST: redis.neo
+    SPRING_DATASOURCE_URL: #{NEO_BENFLEX_HMLG_SPRING_DATASOURCE_URL}#
+    SPRING_DATASOURCE_USERNAME: #{NEO_BENFLEX_HMLG_SPRING_DATASOURCE_USERNAME}#
+  secrets:
+    SPRING_DATASOURCE_PASSWORD: #{NEO_BENFLEX_HMLG_SPRING_DATASOURCE_PASSWORD}#
+
+service:
+  type: LoadBalancer
+
+registry:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: #{REGISTRY_PASSWORD}#
+
+nodeSelector:
+  ${node_name}: "true"
+  
+livenessProbe:
+  httpGet:
+    path: /v1/api/monitor/health/liveness
+    port: http
+  initialDelaySeconds: 60
+  failureThreshold: 30
+  periodSeconds: 10
+
+redis:
+  enabled: true
+  name: redis
+  namespace:
+    create: false

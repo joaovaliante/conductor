@@ -1,0 +1,55 @@
+stages:
+  - template: ./terraform.yaml
+    parameters:
+      directory: ./terraform/$(CLOUD)/kubernetes/$(PROJECT_NAME)
+      jobEnvironment: "$(JOB_ENVIRONMENT)"
+      environment: "$(ENVIRONMENT)"
+      stateName: "Infrastructure"
+
+  - template: ./terraform.yaml
+    parameters:
+      directory: ./terraform/application/$(PROJECT_NAME)
+      jobEnvironment: "$(JOB_ENVIRONMENT)"
+      environment: "$(ENVIRONMENT)"
+      stateName: "Application"
+
+      beforeExecute: |
+        CERT_KEY_PATH="$(certificate_key.secureFilePath)"
+        CERT_PEM_PATH="$(certificate_pem.secureFilePath)"
+        CERT_KEY_VALUE=$(cat $CERT_KEY_PATH | base64)
+        CERT_PEM_VALUE=$(cat $CERT_PEM_PATH | base64)
+
+      arguments: 
+        - '-var=ingress_nginx_default_tls_cert="${CERT_PEM_VALUE}"'
+        - '-var=ingress_nginx_default_tls_key="${CERT_KEY_VALUE}"'
+        #- '--target=module.cielopay_cielo'
+        #- '--target=module.cielopay_bradesco'
+        #- '--target=module.loki'
+        #- '--target=module.helm.helm_release.pier[0]'
+        #- '--target=module.helm_visa-direct'
+        #- '--target=module.rancher_visa-direct'
+        # - '--target=module.helm.helm_release.heimdall[0]'
+        # - '--target=module.helm_agillitas_mercurio'
+        # - '--target=module.helm_c6bank_mercurio'
+        # - '--target=module.helm_cbss_mercurio'
+        # - '--target=module.helm_fortbrasil_mercurio'
+        # - '--target=module.helm_pernambucanas_mercurio'
+        # - '--target=module.helm_unicred_mercurio'
+        # - '--target=module.helm_xpi_mercurio'
+        # - '--target=module.rancher_mercurio'
+        # - '--target=helm_release.mimir'
+        # - '--target=module.rancher_mimir'
+        
+
+      preSteps:
+        - task: DownloadSecureFile@1
+          name: certificate_key
+          displayName: 'Download Certificate Key'
+          inputs:
+            secureFile: 'certificate.key'
+
+        - task: DownloadSecureFile@1
+          name: certificate_pem
+          displayName: 'Download Certificate'
+          inputs:
+            secureFile: 'certificate.pem'

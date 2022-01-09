@@ -1,0 +1,9 @@
+hostname: ${rancher_hostname}
+rancherImageTag: ${rancher_version}
+ingress:
+  extraAnnotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+
+  tls:
+    source: secret

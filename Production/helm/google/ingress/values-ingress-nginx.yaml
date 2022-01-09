@@ -1,0 +1,6 @@
+controller:
+  service:
+    internal:
+      annotations:
+        cloud.google.com/load-balancer-type: Internal
+        networking.gke.io/internal-load-balancer-allow-global-access: "true"

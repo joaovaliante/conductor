@@ -1,0 +1,64 @@
+image:  desenvolvimento.azurecr.io/datahub-publisher
+version: ${version}
+enviroments:
+  values: 
+    AZURE_FUNCTIONS_ENVIRONMENT: Staging
+    App.Version: 27908
+    AzureFunctionsJobHost__logging__console__isEnabled: false
+    Issuer.Id: 999
+    Pooling.account: #{POOLING_ACCOUNT}#
+    Pooling.address: #{POOLING_ADDRESS}#
+    Pooling.adjustment: #{POOLING_ADJUSTMENT}#
+    Pooling.bankslip: #{POOLING_BANKSLIP}#
+    Pooling.card: #{POOLING_CARD}#
+    Pooling.credit-analysis: #{POOLING_CREDIT_ANALYSIS}#
+    Pooling.declined: #{POOLING_DECLINED}#
+    Pooling.limit: #{POOLING_LIMIT}#
+    Pooling.payment: #{POOLING_PAYMENT}#
+    Pooling.person: #{POOLING_PERSON}#
+    Pooling.phone: #{POOLING_PHONE}#
+    Pooling.purchase: #{POOLING_PURCHASE}#
+    Pooling.purchase-approved: #{POOLING_PURCHASE_APPROVED}#
+    Pooling.purchase-canceled: #{POOLING_PURCHASE_CANCELED}#
+    Pooling.purchase-cleared: #{POOLING_PURCHASE_CLEARED}#
+    Pooling.purchase-processed: #{POOLING_PURCHASE_PROCESSED}#
+    Pooling.standin: #{POOLING_STANDIN}#
+    Pooling.statement:  */10 * * * * *
+    Pooling.test: */15 * * * * *
+    Pooling.token: #{POOLING_TOKEN}#
+    Pooling.transaction: #{POOLING_TRANSACTION}#
+    Query.Timeout: 60
+    Redis.Enabled: false
+    RegionalSetting: EN
+    Splunk.Enabled: false
+    TestNew: ""
+    Tokenization.Events: Phone,Card
+    events: ""
+    Splunk.Host: #{DATAHUB_VNEXT_HMLE_SPLUNK_HOST}#
+    Splunk.Port: 15887
+  secrets:
+    AzureWebJobsStorage: #{DATAHUB_VNEXT_HMLE_AZUREWEBJOBSSTORAGE}#
+    CDCTableStorageConnection: #{DATAHUB_VNEXT_HMLE_CDCTABLESTORAGECONNECTION}#
+    SQLConnection: #{DATAHUB_VNEXT_HMLE_SQLCONNECTION}#
+    ServiceBusConnection: #{DATAHUB_VNEXT_HMLE_SERVICEBUSCONNECTION}#
+    RedisConnection: #{DATAHUB_VNEXT_HMLE_REDISCONNECTION}#
+
+
+resources:
+  limits:
+    cpu: 4
+    memory: 512Mi
+  requests: 
+    cpu: 100m
+    memory: 256Mi
+
+registry:
+  servers:
+    - name: desenvolvimento
+      server: desenvolvimento.azurecr.io
+      username: desenvolvimento
+      password: #{VNEXT_HMLE_REGISTRY_PASSWORD}#
+
+
+istio:
+  enabled: true 

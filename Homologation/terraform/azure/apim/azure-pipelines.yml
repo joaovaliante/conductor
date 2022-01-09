@@ -1,0 +1,20 @@
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      ref: refs/heads/master
+      name: Conductor IaC/Azure Pipeline
+
+trigger: none
+
+variables:
+  - group: non-prod-azure
+
+stages:    
+  - template: terraform/pipeline.yaml@templates    
+    parameters:
+      directory: ./terraform/azure/apim
+      jobEnvironment: "Homologation"
+      environment: "hmlg"
+      stateName: "Infrastructure"
+      azureSubscription: "Conductor HMLG IaC"

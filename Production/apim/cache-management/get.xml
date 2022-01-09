@@ -1,0 +1,36 @@
+<policies>
+    <inbound>    
+        <!-- GET QUERY PARAMETER -->
+        <set-variable name="ClientCache" value="@(context.Request.MatchedParameters["id"])" />
+        <!-- GET VALUE ON CACHE -->
+        <cache-lookup-value key="@((string)context.Variables["ClientCache"])" variable-name="client" caching-type="internal" />
+        <!-- CHECK IF VALUE EXIST -->
+        <choose>
+            <when condition="@(!(bool)context.Variables.ContainsKey("client"))">
+                <cache-lookup-value key="@((string)context.Variables["ClientCache"])" variable-name="client" caching-type="external" />
+                <choose>
+                    <when condition="@(!(bool)context.Variables.ContainsKey("client"))">
+                        <!-- RETURN NOT FOUND -->
+                        <return-response>
+                            <set-status code="404" reason="Not Found" />
+                        </return-response>
+                    </when>
+                </choose>
+            </when>
+        </choose>
+        <!-- RETURN KEY VALUE -->
+        <return-response>
+            <set-status code="200" reason="Ok" />
+            <set-body>@((string)context.Variables["client"])</set-body>
+        </return-response>
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>

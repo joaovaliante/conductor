@@ -1,0 +1,30 @@
+replicas: 0
+image:  conductorcr.azurecr.io/vnext/falcon-card-connector-pci
+version: ${version}
+enviroments:
+  values: 
+    JARVIS_BASEPATH: #{FALCON_CARD_CONNECTOR_VNEXT_PROD_JARVIS_BASEPATH}#
+    KAFKA_BROKERS: #{FALCON_CARD_CONNECTOR_VNEXT_PROD_KAFKA_BROKERS}#
+    KAFKA_CONSUMER_GROUPID: #{FALCON_CARD_CONNECTOR_VNEXT_PROD_KAFKA_CONSUMER_GROUPID}#
+    PIERCARDS_URL: #{FALCON_CARD_CONNECTOR_VNEXT_PROD_PIERCARDS_URL}#
+    SPLUNK_ENABLED: true
+  secrets:
+    SPLUNK_TOKEN: #{FALCON_CARD_CONNECTOR_VNEXT_PROD_SPLUNK_TOKEN}#
+
+resources:
+  limits:
+    cpu: 4
+    memory: 512Mi
+  requests: 
+    cpu: 100m
+    memory: 256Mi
+
+registry:
+  servers:
+    - name: conductorcr
+      server: conductorcr.azurecr.io
+      username: conductorcr
+      password: #{REGISTRY_PASSWORD}#
+
+istio:
+  enabled: true 

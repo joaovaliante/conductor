@@ -1,0 +1,38 @@
+ingress:
+  enabled: true
+
+  tls:
+    enabled: true
+    hosts:
+      - secret: rundeck-cert
+        cert: ${certValue}
+        key: ${certKeyValue}
+
+registry:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: "${registryPassword}"    
+
+executionStorage:
+  type: azure
+  azure:
+    accessKey: ${storageAccessKey}
+    path: logs/$${job.project}}/$${job.execid}}.log    
+
+ldap:
+  enabled: true
+  port: 389
+  password: ${ldapPassword}
+  user:
+    objectClass: person
+    rdnAttribute: sAMAccountName
+    passwordAttribute: unicodePwd
+    idAttribute: sAMAccountName
+    emailAttribute: mail
+    firstNameAttribute: givenName
+    lastNameAttribute: sn
+  role:
+    objectClass: group
+    nameAttribute: cn
+    memberAttribute: member

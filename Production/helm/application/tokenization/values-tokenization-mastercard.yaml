@@ -1,0 +1,14 @@
+
+replicas: 0
+image: conductorcr.azurecr.io/tokenization-mastercard
+version: 34869
+
+autoScale:
+  enabled: false
+
+
+registry:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: #{REGISTRY_PASSWORD}#

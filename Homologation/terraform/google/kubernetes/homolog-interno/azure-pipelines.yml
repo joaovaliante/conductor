@@ -1,0 +1,40 @@
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      ref: refs/heads/master
+      name: Conductor IaC/Azure Pipeline
+
+trigger: none
+
+variables:
+  - group: kubernetes-base
+  - group: homologation-kubernetes
+  - group: homologation-pier
+  - group: google
+  - group: homolog-interno
+  - group: homolog-interno-store
+  - group: hmlg-jarvis
+  - group: homolog-interno-sgr
+  - group: homolog-interno-loki
+  - group: hmlgi-heimdall
+  - group: hmlgi-pier
+  - group: hmlgi-store
+  - group: hmlg-autoseg
+  - group: hmlg-cielopay-bradesco
+  - group: hmlg-cielopay-cielo
+
+stages:
+  - template: terraform/pipeline.yaml@templates
+    parameters:
+      directory: ./terraform/$(CLOUD)/kubernetes/$(PROJECT_NAME)
+      jobEnvironment: "$(JOB_ENVIRONMENT)"
+      environment: "$(ENVIRONMENT)"
+      stateName: "Infrastructure"
+
+  - template: terraform/pipeline.yaml@templates
+    parameters:
+      directory: ./terraform/application/$(PROJECT_NAME)
+      jobEnvironment: "$(JOB_ENVIRONMENT)"
+      environment: "$(ENVIRONMENT)"
+      stateName: "Application"

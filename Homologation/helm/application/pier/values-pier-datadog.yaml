@@ -1,0 +1,12 @@
+monitor:
+  datadog:
+    enabled: true
+    environment: ${datadog_environment}
+
+    profile:
+      enabled: true
+
+rabbitmq:
+  monitor:
+    datadog:
+      enabled: true

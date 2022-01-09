@@ -1,0 +1,47 @@
+replicas: 0
+image:  desenvolvimento.azurecr.io/vnext/falcon-connector
+version: ${version}
+
+enviroments:
+  values: 
+    DATABASE_CONNECTIONURI: #{FALCON_CONNECTOR_HMLE_DATABASE_CONNECTIONURI}# 
+    DATABASE_POOLISSUERS_MAXIDLECONNS: "2"
+    DATABASE_POOLISSUERS_MAXOPENCONNS: "2"
+    DATABASE_POOLPRINCIPAL_MAXIDLECONNS: "2"
+    DATABASE_POOLPRINCIPAL_MAXOPENCONNS: "2"
+    JARVIS_BASEPATH: #{FALCON_CONNECTOR_HMLE_JARVIS_BASEPATH}#
+    KAFKA_BROKERS: #{FALCON_CONNECTOR_HMLE_KAFKA_BROKERS}# 
+    KAFKA_CONSUMER_GROUPID: falcon-connector
+    SPLUNK_ENABLED: "true"
+  secrets:
+    DATABASE_PASSWORD: #{FALCON_CONNECTOR_HMLE_DATABASE_PASSWORD}#
+    DATABASE_USER: #{FALCON_CONNECTOR_HMLE_DATABASE_USER}# 
+    SPLUNK_TOKEN: #{FALCON_CONNECTOR_HMLE_SPLUNK_TOKEN}# 
+    JARVIS_ACCESSTOKEN: #{FALCON_CONNECTOR_HLME_JARVIS_ACCESSTOKEN}#
+
+resources:
+  limits:
+    cpu: 4
+    memory: 512Mi
+  requests: 
+    cpu: 100m
+    memory: 256Mi
+  
+startupProbe:
+  httpGet:
+    path: /v1/manager/health
+    port: http
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  failureThreshold: 10
+
+registry:
+  servers:
+    - name: desenvolvimento
+      server: desenvolvimento.azurecr.io
+      username: desenvolvimento
+      password: #{VNEXT_HMLE_REGISTRY_PASSWORD}#
+
+
+istio:
+  enabled: true 

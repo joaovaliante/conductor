@@ -1,0 +1,40 @@
+image: desenvolvimento.azurecr.io/vnext/cipher
+version: ${version}
+
+resources:
+  limits:
+     cpu: 1000m
+     memory: 2048Mi
+  requests:
+     cpu: 100m
+     memory: 1024Mi
+
+enviroments:
+  values: 
+    CIPHER_HAZELCAST_KUBERNETES_ENABLED: true
+    CIPHER_HAZELCAST_KUBERNETES_NAMESPACE: cipher
+    CIPHER_HAZELCAST_KUBERNETES_SERVICENAME: hazelcast
+    CIPHER_HAZELCAST_MANAGEMENT_ENABLED: false
+    CIPHER_SPLUNK_BATCHINTERVAL: 1
+    CIPHER_SPLUNK_BATCHSIZEBYTES: 10000
+    CIPHER_SPLUNK_BATCHSIZECOUNT: 10
+    CIPHER_SPLUNK_DISABLECERTIFICATEVALIDATION: true
+    CIPHER_SPLUNK_ENABLED: true
+    CIPHER_SPLUNK_RETRIESONERROR: 10
+    CIPHER_SPLUNK_SENDMODE: parallel
+    CIPHER_SPLUNK_SOURCE: vnext
+    CIPHER_SPLUNK_SOURCETYPE: _json
+    CIPHER_SPLUNK_URL: #{CIPHER_VNEXT_HMLE_SPLUNK_URL}#
+    INFO_APP_NAME: Cipher Hmle
+    SPRING_DATASOURCE_URL: #{CIPHER_VNEXT_HMLE_SPRING_DATASOURCE_URL}#
+    SPRING_PROFILES_ACTIVE: desenvolvimento
+    SPRING_REDIS_DATABASE: 13 
+  secrets:
+    CIPHER_SPLUNK_TOKEN: #{CIPHER_VNEXT_HMLE_SPLUNK_TOKEN}#
+    SPRING_DATASOURCE_USERNAME: #{CIPHER_VNEXT_HMLE_SPRING_DATASOURCE_USERNAME}#
+
+registry:
+  - name: desenvolvimento-cipher
+    server: desenvolvimento.azurecr.io
+    username: desenvolvimento
+    password: #{VNEXT_HMLE_REGISTRY_PASSWORD}#

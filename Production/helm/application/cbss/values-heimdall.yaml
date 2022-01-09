@@ -1,0 +1,4 @@
+gateway:
+  ingress:
+    annotations: 
+      kubernetes.io/ingress.class: "nginx-heimdall"

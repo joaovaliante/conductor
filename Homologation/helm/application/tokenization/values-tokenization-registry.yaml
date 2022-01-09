@@ -1,0 +1,5 @@
+registry:
+  - name: desenvolvimento-cipher
+    server: desenvolvimento.azurecr.io
+    username: desenvolvimento
+    password: #{VNEXT_HMLE_REGISTRY_PASSWORD}#

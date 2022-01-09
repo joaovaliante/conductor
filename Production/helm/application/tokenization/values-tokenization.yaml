@@ -1,0 +1,47 @@
+
+imagePullSecret: conductorcr
+
+service:
+  type: LoadBalancer
+  
+enviroments:
+  # non sensitive variables
+  values:
+    AZURE_FUNCTIONS_ENVIRONMENT: "Development"
+    MdesEnviroment: "0"
+    PathCipher: http://10.50.56.37/api/v1
+    PathIssuerService: http://10.45.0.157
+    PathPier: https://pierapi-cond.conductor.com.br/v2/api/
+    PathSplunk: https://10.50.80.18:8088
+    VisaHost: https://api.visa.com:443
+  # sensitive variables
+  secrets:
+    AzureServicesAuthConnectionString: #{AzureServicesAuthConnectionString}#
+    AzureWebJobsStorage: #{AzureWebJobsStorage}#
+    CDTCertificateKeyVaultSecretIdentifier: #{CDTCertificateKeyVaultSecretIdentifier}#
+    CosmoDBEndpoint: #{CosmoDBEndpoint}#
+    CosmoDBKey: #{CosmoDBKey}#
+    CosmosDBConnectionString: #{CosmosDBConnectionString}#
+    ServiceBusConnectionString: #{ServiceBusConnectionString}#
+    TokenSplunk: #{TokenSplunk}#
+    
+resources:
+  limits:
+    cpu: 700m
+    memory: 2Gi
+  requests:
+    cpu: 200m
+    memory: 400Mi
+
+autoScale:
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 75
+
+

@@ -1,0 +1,14 @@
+api:
+  service:
+    annotations: 
+      service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+frontend:
+  service:
+    annotations:
+      service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+rabbitmq:
+  service:
+    annotations:
+      service.beta.kubernetes.io/azure-load-balancer-internal: "true"

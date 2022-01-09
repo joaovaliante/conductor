@@ -1,0 +1,8 @@
+gateway:
+  monitor:
+    datadog:
+      enabled: true
+      environment: ${datadog_environment}
+
+      profile:
+        enabled: true

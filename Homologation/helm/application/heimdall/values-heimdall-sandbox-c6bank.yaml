@@ -1,0 +1,40 @@
+api:
+  enviroments:
+    values:
+      HEIMDALL_DATASOURCE_DATABASENAME: "Heimdall"
+      SPRING_RABBITMQ_VIRTUAL-HOST: "c6bank-heimdall"
+      HEIMDALL_REDIS_HOST: "redis.c6bank-heimdall-redis"
+    
+    secrets:
+      HEIMDALL_DATASOURCE_SERVERNAME: #{C6BANK_HEIMDALL_DATASOURCE_SERVERNAME}#
+      HEIMDALL_DATASOURCE_USERNAME: #{C6BANK_HEIMDALL_DATASOURCE_USERNAME}#
+      HEIMDALL_DATASOURCE_PASSWORD: #{C6BANK_HEIMDALL_DATASOURCE_PASSWORD}#
+   
+gateway:
+  enviroments:
+    values:
+      HEIMDALL_DATASOURCE_DATABASENAME: "Heimdall"
+      SPRING_RABBITMQ_VIRTUAL-HOST: "c6bank-heimdall"
+      HEIMDALL_REDIS_HOST: "redis.c6bank-heimdall-redis"
+ 
+    secrets:
+      HEIMDALL_DATASOURCE_SERVERNAME: #{C6BANK_HEIMDALL_DATASOURCE_SERVERNAME}#
+      HEIMDALL_DATASOURCE_USERNAME: #{C6BANK_HEIMDALL_DATASOURCE_USERNAME}#
+      HEIMDALL_DATASOURCE_PASSWORD: #{C6BANK_HEIMDALL_DATASOURCE_PASSWORD}#
+   
+  ingress:
+    enabled: true  
+
+    annotations: 
+      kubernetes.io/ingress.class: "nginx"
+      nginx.ingress.kubernetes.io/service-upstream: "true"
+      
+    hosts:
+      - url: "heimdall-c6bank-hmlext.devcdt.com.br"
+        path: /*
+        pathType: ImplementationSpecific
+    
+    tls:
+      enabled: false
+      hosts:
+        - url: "heimdall-c6bank-hmlext.devcdt.com.br"

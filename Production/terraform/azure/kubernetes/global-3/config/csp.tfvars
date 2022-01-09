@@ -1,0 +1,11 @@
+subscription                        = "a4212e99-5f1e-474a-9b81-a689fbb09925"
+cluster_name                        = "global-3"
+location                            = "Brazil South"
+resource_group_name                 = "RG_GLOBAL3_BrazilSouth"
+kubernetes_version                  = "1.20.7"
+subnet_name                         = "AZ1P-GLOBAL3-SUBNET"
+virtual_network_name                = "AZ1P-VNET"
+virtual_network_resource_group_name = "Network"
+rancher_url                         = "https://rancher.conductor.com.br"
+heimdall_enabled                    = true
+pier_enabled                        = true

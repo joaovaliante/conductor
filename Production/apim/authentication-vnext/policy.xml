@@ -1,0 +1,45 @@
+<policies>
+    <inbound>
+        <choose>
+            <when condition="@(context.Request.Url.Path.EndsWith("/manager/health") )" />
+            <when condition="@(context.Request.Certificate == null)">
+                <return-response>
+                    <set-status code="403" reason="Client certificate not informed" />
+                </return-response>
+            </when>
+            <when condition="@(!context.Request.Certificate.VerifyNoRevocation())">
+                <return-response>
+                    <set-status code="407" reason="Invalid client certificate" />
+                </return-response>
+            </when>
+            <!-- B89 -->
+            <when condition="@(context.Request.Certificate.Thumbprint == "3F0EE997184C05C3727B1616F7806EAA4A1E677A")">
+                <set-header name="issuer_id" exists-action="override">
+                    <value>248</value>
+                </set-header>
+            </when>
+            <!-- COINK -->
+            <when condition="@(context.Request.Certificate.Thumbprint == "7726DE53215BBD4E0CBA82CAFD1499EF4C615DE4")">
+                <set-header name="issuer_id" exists-action="override">
+                    <value>259</value>
+                </set-header>
+            </when>
+            <otherwise>
+                <return-response>
+                    <set-status code="403" reason="Invalid client certificate" />
+                </return-response>
+            </otherwise>
+        </choose>
+        <base />
+        <set-backend-service base-url="{{backend-vnext-pierflex-account}}" />
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>

@@ -1,0 +1,35 @@
+replicas: 0
+image: conductorcr.azurecr.io/piercards/embossing
+version: ${version}
+enviroments:
+  values: 
+    CARDS_PROTOCOL: http
+    CARDS_SERVER: #{EMBOSSING_VNEXT_PROD_CARDS_SERVER}# 
+    SPLUNK_ENABLED: True
+    SPLUNK_INDEX: embossing
+    SPLUNK_IP: #{EMBOSSING_VNEXT_PROD_SPLUNK_IP}#
+    SPLUNK_PORT: 8080
+    SPLUNK_PROTOCOL: https
+    SPLUNK_SOURCE: vnext 
+    TEAMS_WEBHOOK: #{EMBOSSING_VNEXT_PROD_TEAMS_WEBHOOK}#
+
+  secrets:
+    #ISSUERS: #{EMBOSSING_VNEXT_PROD_ISSUERS}#
+    SPLUNK_TOKEN: #{EMBOSSING_VNEXT_PROD_SPLUNK_TOKEN}#
+
+resources:
+  limits:
+    cpu: 4
+    memory: 512Mi
+  requests: 
+    cpu: 100m
+    memory: 256Mi
+
+registry:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: #{REGISTRY_PASSWORD}#
+
+istio:
+  enabled: true 

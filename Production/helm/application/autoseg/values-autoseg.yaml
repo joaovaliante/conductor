@@ -1,0 +1,59 @@
+replicas: 1
+# Name of image pull
+imagePullSecret: conductorcr
+image: conductorcr.azurecr.io/topapi/autoseg-api
+version: 0.22.0
+
+autoseg:
+  namespace: autoseg
+
+registry:
+  servers:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: ${registry_password}
+  
+enviroments:
+  # non sensitive variables
+  values:
+    SPRING_PROFILES_ACTIVE: prod
+    RUN_JAVA: true
+    TOPAPI_APIDATASOURCE_DATABASE: top_api
+    TOPAPI_AUTOSEGPROPERTIES_USER: AutoSeg
+    TOPAPI_APIDATASOURCE_SERVER: #{TOPAPI_APIDATASOURCE_SERVER}#
+    SERVER_SSL_KEYSTORE: /etc/pkcs12/auto/top-keystore.p12
+    TZ: America/Sao_Paulo
+  # sensitive variables
+  secrets:
+    TOPAPI_APIDATASOURCE_USER: #{TOPAPI_APIDATASOURCE_USER}#
+    TOPAPI_APIDATASOURCE_PASSWORD: #{TOPAPI_APIDATASOURCE_PASSWORD}#
+    TOPAPI_PIERPROPERTIES_TOKEN: #{TOPAPI_PIERPROPERTIES_TOKEN}#
+    TOPAPI_PIERPROPERTIES_CLIENTID: #{TOPAPI_PIERPROPERTIES_CLIENTID}#
+    TOPAPI_AUTOSEGPROPERTIES_PASSWORD: #{TOPAPI_AUTOSEGPROPERTIES_PASSWORD}#
+
+
+service:
+  type: ClusterIP
+  loadBalancerIP:
+  port: 8443
+  
+  labels: {}
+  annotations: {}
+
+ingress:
+  enabled: true  
+  defaultBackend:
+    enabled: true
+  hosts:
+    - url: autoseg.conductor.com.br
+
+  tls: 
+    enabled: false
+    hosts:
+      - url: autoseg.conductor.com.br
+        secret: autoseg-cert
+        cert: <setted by terraform>
+        key: <setted by terraform>
+
+  annotations: {}  

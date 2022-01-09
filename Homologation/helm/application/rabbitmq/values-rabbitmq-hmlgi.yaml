@@ -1,0 +1,12 @@
+replicas: 1
+image: conductorcr.azurecr.io/devops/rabbitmq-cluster
+version: 3.8.0-alpine
+
+registry:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: #{REGISTRY_PASSWORD}#
+
+service:
+  type: LoadBalancer

@@ -1,0 +1,71 @@
+cp-zookeeper:
+  enabled: true
+  servers: 3
+  image: confluentinc/cp-zookeeper
+  imageTag: 6.0.1
+  
+cp-kafka:
+  enabled: true
+  brokers: 3
+  image: confluentinc/cp-enterprise-kafka
+  imageTag: 6.0.1
+
+  resources:
+   limits:
+    cpu: 1500m
+    memory: 2560Mi
+   requests:
+    cpu: "1"
+    memory: 2Gi
+
+cp-schema-registry:
+  enabled: true
+  image: confluentinc/cp-schema-registry
+  imageTag: 6.0.1
+
+cp-kafka-rest:
+  enabled: true
+  image: confluentinc/cp-kafka-rest
+  imageTag: 6.0.1
+
+cp-kafka-connect:
+  enabled: true
+  image: confluentinc/cp-kafka-connect
+  imageTag: 6.0.1
+
+  resources:
+   limits:
+    cpu: 1500m
+    memory: 3Gi
+   requests:
+    cpu: "1"
+    memory: 2560Mi
+
+cp-ksql-server:
+  enabled: true
+  image: confluentinc/cp-ksqldb-server
+  imageTag: 6.0.1
+
+cp-control-center:
+  enabled: false
+  image: confluentinc/cp-enterprise-control-center
+  imageTag: 6.0.1  
+
+registry:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: #{REGISTRY_PASSWORD}#
+  
+storage:
+  #Create PVC
+  create: true
+  size: 10Gi
+  className: standard
+  accessMode: ReadWriteOnce
+  
+  persistentVolume:
+    accessMode: ReadWriteOnce
+    nfs:
+     - server: nfs-server.default.svc.cluster.local
+       path: /

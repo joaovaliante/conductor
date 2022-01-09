@@ -1,0 +1,6 @@
+project              = "cdt-monitoramento-prd"
+region               = "us-east1"
+env_name             = "prd"
+host_subnet_name     = "gcp2p-subnet-monitoramento"
+host_network_project = "cdt-network-prd"
+timezone             = "America/Sao_Paulo"

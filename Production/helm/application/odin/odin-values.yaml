@@ -1,0 +1,183 @@
+# Number of replicas to Odin
+# Name of image pull
+imagePullSecret: conductorcr
+
+labels: {}
+annotations: {}  
+resources: {}
+
+namespace:  
+  create: false
+
+# Define a different affinity used on Odin
+affinity: {}
+nodeSelector: {}
+
+productionDeployment:
+  replicas: 6
+  weight: 100
+  image: conductorcr.azurecr.io/autorizacao/master/odin
+  version: 1.71.0-74724cc7
+
+  enviroments:
+    # Default enviroments, this variables can be override on the "values" definition
+    defaults:       
+      DD_AGENT_HOST: dd-agent
+      DD_JMXFETCH_ENABLED: 'true'
+      DD_LOGS_ENABLED: 'true'
+      DD_PROCESS_AGENT_ENABLED: 'true'
+      DD_SYSTEM_PROBE_ENABLED: 'true'
+      DD_TRACE_AGENT_PORT: '8126'      
+      DD_TRACE_ANALYTICS_ENABLED: 'true'            
+      SPRING_RABBITMQ_PORT: "5672"
+      RUN_JAVA: 'true'      
+      TZ: America/Recife
+      ODIN_SPLUNK_DESTINATION: 10.50.80.18:15897
+    # non sensitive variables
+    values: {}
+    # sensitive variables
+    secrets: {}
+  
+canaryDeployment:
+  enabled: true
+  replicas: 0
+  weight: 0
+  image: conductorcr.azurecr.io/autorizacao/master/odin
+  version: 1.71.0-74724cc7
+  
+  enviroments:
+    # Default enviroments, this variables can be override on the "values" definition
+    defaults: 
+      DD_AGENT_HOST: dd-agent
+      DD_JMXFETCH_ENABLED: 'true'
+      DD_LOGS_ENABLED: 'true'
+      DD_PROCESS_AGENT_ENABLED: 'true'
+      DD_SYSTEM_PROBE_ENABLED: 'true'
+      DD_TRACE_AGENT_PORT: '8126'      
+      DD_TRACE_ANALYTICS_ENABLED: 'true'            
+      SPRING_RABBITMQ_PORT: "5672"
+      RUN_JAVA: 'true'      
+      TZ: America/Recife
+      ODIN_SPLUNK_DESTINATION: 10.50.80.18:15897
+    # non sensitive variables
+    values: {}
+    # sensitive variables
+    secrets: {}
+
+asyncDeployment:
+  enabled: true
+  replicas: 5  
+  image: conductorcr.azurecr.io/autorizacao/master/odin
+  version: 1.71.0-74724cc7
+
+  enviroments:
+    # Default enviroments, this variables can be override on the "values" definition
+    defaults:        
+      DD_AGENT_HOST: dd-agent
+      DD_JMXFETCH_ENABLED: 'true'
+      DD_LOGS_ENABLED: 'true'
+      DD_PROCESS_AGENT_ENABLED: 'true'
+      DD_SYSTEM_PROBE_ENABLED: 'true'
+      DD_TRACE_AGENT_PORT: '8126'      
+      DD_TRACE_ANALYTICS_ENABLED: 'true'            
+      SPRING_RABBITMQ_PORT: "5672"
+      RUN_JAVA: 'true'      
+      TZ: America/Recife
+      ODIN_SPLUNK_DESTINATION: 10.50.80.18:15897
+      ODIN_DATASOURCE_MINIDLE: 1
+      ODIN_DATASOURCE_SOCKETTIMEOUT: 5000
+      ODIN_HSM_THALES_MAXPOOLSESSAOINATIVO: 0
+      ODIN_HSM_THALES_MINPOOLSESSAO: 0
+    # non sensitive variables
+    values: {}
+    # sensitive variables
+    secrets: {}
+
+resources:
+  requests:
+    cpu: 3
+    memory: 4Gi
+  
+readinessProbe: 
+  tcpSocket:
+    port: 5555
+
+startupProbe: 
+  tcpSocket:
+    port: 5555
+  initialDelaySeconds: 10
+  failureThreshold: 10
+  periodSeconds: 5     
+
+livenessProbe: 
+  tcpSocket:
+    port: 5555
+  initialDelaySeconds: 10
+
+
+service:
+  type: ClusterIP
+  loadBalancerIP: 
+  port: 8090
+  
+  labels: {} 
+  annotations: {}  
+
+autoScale:
+  enabled: true 
+  minReplicas: 6
+  maxReplicas: 30
+  template:
+    behavior:
+      scaleDown:
+        stabilizationWindowSeconds: 300
+        policies:
+          - type: Percent
+            value: 100
+            periodSeconds: 15
+      scaleUp:
+        stabilizationWindowSeconds: 90
+        policies:
+          - type: Percent
+            value: 100
+            periodSeconds: 30
+          - type: Pods
+            value: 4
+            periodSeconds: 30
+        selectPolicy: Max  
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
+
+istio:
+  enabled: true
+  gateway:
+    port: 8090
+    hosts: "*"
+    redirectTLS: "false"
+
+rabbitmq:
+  registry:
+    - name: conductorcr
+      server: conductorcr.azurecr.io
+      username: conductorcr
+      password: #{REGISTRY_PASSWORD}#
+
+  monitor:
+    dashboard:
+      enabled: true
+
+    prometheusRule:
+      enabled: true  
+
+  service:
+    type: LoadBalancer
+    annotations: 
+     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+  namespace:
+    create: true

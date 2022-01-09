@@ -1,0 +1,14 @@
+cp-zookeeper:
+  service:
+    annotations: 
+      service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+cp-kafka:
+  service:
+    annotations:
+      service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+cp-kafka-connect:
+  service:
+    annotations:
+      service.beta.kubernetes.io/azure-load-balancer-internal: "true"

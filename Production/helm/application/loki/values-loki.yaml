@@ -1,0 +1,31 @@
+replicas: 1
+imagePullSecret: conductorcr
+image: conductorcr.azurecr.io/loki/loki-api
+version: 1.6.0
+namespace:
+    create: false
+
+registry:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: ${registry_password}
+
+enviroments:
+  # non sensitive variables
+  values:
+    DATASOURCE_DATABASENAME: PIER_V2
+    DATASOURCE_SERVERNAME: 10.50.72.51
+    REDIS_HOST: redis.loki-redis
+    SPRING_PROFILES_ACTIVE: prod
+    SPRING_REDIS: redis.loki-redis
+  # sensitive variables
+  secrets:
+    DATASOURCE_USERNAME: #{DATASOURCE_USERNAME}#
+    DATASOURCE_PASSWORD: #{DATASOURCE_PASSWORD}#
+
+redis:
+  enabled: true
+  name: redis
+  namespace:
+    create: true

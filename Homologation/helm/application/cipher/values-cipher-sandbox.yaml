@@ -1,0 +1,33 @@
+image: "desenvolvimento.azurecr.io/vnext/cipher"
+version: "19676"
+
+resources:
+  limits:
+     cpu: 1000m
+     memory: 2048Mi
+  requests:
+     cpu: 100m
+     memory: 1024Mi
+
+enviroments:
+  values:
+    SPRING_REDIS_PORT: 6379
+    SPRING_REDIS_HOST: redis.cipher-redis
+    SPRING_DATASOURCE_DATABASENAME: "cipher"
+  secrets:
+    SPRING_DATASOURCE_PASSWORD: #{CIPHER_SPRING_DATASOURCE_PASSWORD}#
+    SPRING_DATASOURCE_SERVERNAME: #{CIPHER_SPRING_DATASOURCE_SERVERNAME}#
+    SPRING_DATASOURCE_USERNAME: #{CIPHER_SPRING_DATASOURCE_USERNAME}#
+
+registry:
+  - name: desenvolvimento-cipher
+    server: desenvolvimento.azurecr.io
+    username: desenvolvimento
+    password: #{CIPHER_REGISTRY_PASSWORD}#
+
+redis:
+  enabled: true
+  name: redis
+
+  namespace:
+    create: true

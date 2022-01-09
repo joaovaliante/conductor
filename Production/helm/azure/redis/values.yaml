@@ -1,0 +1,6 @@
+monitor: 
+  prometheusRule:
+    default: 
+      additionalRuleLabels: 
+        cloud: azure
+        cluster: ${cluster_name}

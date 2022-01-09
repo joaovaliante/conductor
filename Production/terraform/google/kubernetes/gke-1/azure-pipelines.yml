@@ -1,0 +1,11 @@
+trigger: none
+
+variables:
+  - group: google
+  - group: kubernetes-base
+  - group: production-kubernetes
+  - group: production-pier
+  - group: cdt-gke-1
+
+extends:
+  template: ../../../../templates/app-pipeline.yaml

@@ -1,0 +1,50 @@
+replicas: 1
+
+imagePullSecret: conductorcr
+image: conductorcr.azurecr.io/cielo-pay-parse-api-bradesco/cielo-pay-api-parse
+version: 1-8-0
+
+enviroments:
+    # non sensitive variables
+  values: 
+    CUSTOM_SECURITY_USERNAME: ciel0p@y.#user
+    CUSTOM_CARADHRAS_OAUTHHOST: https://auth.caradhras.io
+    CUSTOM_CARADHRAS_APIHOST: https://api.caradhras.io
+    CUSTOM_CARADHRAS_PAYMENTAPIHOST: https://payments.caradhras.io
+    CUSTOM_SPLUNK_LOGS_ENABLED: true
+    CUSTOM_SPLUNK_LOGS_HOST: 10.50.80.18
+    CUSTOM_SPLUNK_LOGS_PORT: 15895
+    SPRING_REDIS_HOST: redis.cielopay-bradesco-redis
+    SPRING_REDIS_PORT: 6379
+    INFO_APP_NAME: BRADESCO PARSE API
+
+    # sensitive variables
+  secrets:
+    CUSTOM_SECURITY_PASSWORD: #{CUSTOM_SECURITY_PASSWORD_BRADESCO}#
+    CUSTOM_SECURITY_CLIENTID: #{CUSTOM_SECURITY_CLIENTID_BRADESCO}#
+    CUSTOM_SECURITY_CLIENTSECRET: #{CUSTOM_SECURITY_CLIENTSECRET_BRADESCO}#
+    CUSTOM_SECURITY_SIGNINGKEY: #{CUSTOM_SECURITY_SIGNINGKEY_BRADESCO}#
+    CUSTOM_CARADHRAS_CLIENTSECRET: #{CUSTOM_CARADHRAS_CLIENTSECRET_BRADESCO}#
+    CUSTOM_CARADHRAS_CLIENTID: #{CUSTOM_CARADHRAS_CLIENTID_BRADESCO}#
+
+service:
+    type: LoadBalancer
+    loadBalancerIP: 
+    port: 9090
+    
+    labels: {} 
+    annotations: {}  
+
+registry:
+  servers:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: ${registry_password}
+
+redis:
+  enabled: true
+  name: redis
+  namespace:
+    create: true
+

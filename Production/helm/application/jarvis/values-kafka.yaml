@@ -1,0 +1,98 @@
+cp-zookeeper:
+  enabled: true
+  servers: 3
+  image: confluentinc/cp-zookeeper
+  imageTag: 6.0.1
+
+  persistence:
+    enabled: true
+    dataDirSize: 100Gi
+    dataLogDirSize: 15Gi
+
+  resources:
+   limits:
+    cpu: 800m
+    memory: 3Gi
+   requests:
+    cpu: 300m
+    memory: 1Gi
+      
+cp-kafka:
+  enabled: true
+  brokers: 3
+  image: confluentinc/cp-enterprise-kafka
+  imageTag: 6.0.1
+
+  persistence:
+    enabled: true
+    size: 230Gi
+    disksPerBroker: 1
+
+  resources:
+   limits:
+    cpu: 1000m
+    memory: 9Gi
+   requests:
+    cpu: 300m
+    memory: 5Gi
+  securityContext: 
+    runAsUser: 0
+
+cp-schema-registry:
+  enabled: true
+  image: confluentinc/cp-schema-registry
+  imageTag: 6.0.1 
+
+  resources: 
+   limits:
+    cpu: 250m
+    memory: 2.5Gi
+   requests:
+    cpu: 100m
+    memory: 1Gi
+
+cp-kafka-rest:
+  enabled: true
+  image: confluentinc/cp-kafka-rest
+  imageTag: 6.0.1
+
+  resources:
+   limits:
+    cpu: 250m
+    memory: 600Mi
+   requests:
+    cpu: 100m
+    memory: 300Mi
+
+cp-kafka-connect:
+  enabled: true
+  image: confluentinc/cp-kafka-connect
+  imageTag: 6.0.1
+
+  resources:
+   limits:
+    cpu: 600m
+    memory: 3.5Gi
+   requests:
+    cpu: 300m
+    memory: 2Gi
+
+cp-ksql-server:
+  enabled: true
+  image: confluentinc/cp-ksqldb-server
+  imageTag: 6.0.1
+
+cp-control-center:
+  enabled: false
+  image: confluentinc/cp-enterprise-control-center
+  imageTag: 6.0.1 
+  
+rancherEndpoint:
+  enabled: true   
+
+registry:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: #{REGISTRY_PASSWORD}#
+

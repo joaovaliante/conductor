@@ -1,0 +1,40 @@
+image: ${image}
+version: ${version}
+
+enviroments:
+    # Default environments, this variables can be override on the "values" definition
+  values: 
+    DATASOURCE_DATABASENAME: "CONDUCTOR_STORE_HMLG"
+    SPRING_PROFILES_ACTIVE: "producao"
+    SERVER_PORT: 8080
+    STORE_MAVEN_HOME: "/usr/share/maven"
+    STORE_URL: "http://10.75.130.15:9090"
+    
+  secrets:
+    DATASOURCE_PASSWORD: #{STORE_DATASOURCE_PASSWORD}# 
+    DATASOURCE_SERVERNAME: #{STORE_DATASOURCE_SERVERNAME}#
+    DATASOURCE_USERNAME: #{STORE_DATASOURCE_USERNAME}#
+
+service:
+  type: LoadBalancer
+  annotations:
+    cloud.google.com/load-balancer-type: Internal
+    networking.gke.io/internal-load-balancer-allow-global-access: "true"   
+
+  ports:
+  - name: 9090tcp
+    nodePort: 31775
+    port: 9090
+    protocol: TCP
+    targetPort: 9090
+  - name: 8000tcp
+    nodePort: 30838
+    port: 8000
+    protocol: TCP
+    targetPort: 8000
+
+registry:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: #{REGISTRY_PASSWORD}#

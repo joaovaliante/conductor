@@ -1,0 +1,58 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnect
+metadata:
+  labels:
+    kafka-connect: appgw-splunk-${appgw_type}
+  name: appgw-splunk-${appgw_type}
+  annotations:
+    strimzi.io/use-connector-resources: "true"
+spec:
+  image: ${connect_image}
+  replicas: ${connect_replicas}
+  bootstrapServers: ${connect_bootstrap_servers}
+  config:
+    key.converter.schemas.enable: false
+    value.converter.schemas.enable: false
+    group.id: ${connect_group_id}
+    offset.storage.topic: ${connect_topic_pattern}-offsets
+    config.storage.topic: ${connect_topic_pattern}-configs
+    status.storage.topic: ${connect_topic_pattern}-status
+  authentication:
+    type: plain
+    username: $ConnectionString
+    passwordSecret:
+      secretName: kafka-appgw-splunk-${appgw_type}
+      password: password
+  tls:
+    trustedCertificates: []
+  logging:
+    type: inline
+    loggers:
+      log4j.rootLogger: "INFO"
+  resources:
+    requests:
+      cpu: "1"
+      memory: 3Gi
+    limits:
+      cpu: "2"
+      memory: 3Gi
+  template:
+    pod:
+      imagePullSecrets:
+        - name: conductorcr
+
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    kafka-connect: appgw-splunk-${appgw_type}
+                topologyKey: topology.kubernetes.io/zone
+              weight: 100    
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    kafka-connect: appgw-splunk-${appgw_type}
+                topologyKey: kubernetes.io/hostname
+              weight: 90      

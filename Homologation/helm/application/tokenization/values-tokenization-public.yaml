@@ -1,0 +1,9 @@
+replicas: 1
+image: desenvolvimento.azurecr.io/tokenization-public
+version: 42575
+
+autoScale:
+  enabled: true 
+
+
+

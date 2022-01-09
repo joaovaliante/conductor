@@ -1,0 +1,10 @@
+controller:
+  extraArgs: 
+    http-port: 6970
+
+  containerPort:
+    http: 6970    
+
+  service:
+    ports:
+      http: 6970

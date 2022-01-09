@@ -1,0 +1,11 @@
+trigger: none
+
+variables:
+  - group: kubernetes-base
+  - group: production-azure
+  - group: production-kubernetes
+  - group: production-pier
+  - group: csp-global-3
+
+extends:
+  template: ../../../../templates/app-pipeline.yaml

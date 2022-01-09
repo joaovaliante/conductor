@@ -1,0 +1,57 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnect
+metadata:
+  labels:
+    kafka-connect: pier-kafka-splunk
+  name: pier-kafka-splunk
+  annotations:
+    strimzi.io/use-connector-resources: "true"
+spec:
+  image: ${connect_image}
+  replicas: ${connect_replicas}
+  bootstrapServers: ${connect_bootstrap_servers}
+  config:
+    group.id: splunk
+    offset.storage.topic: pier-splunk-offsets
+    config.storage.topic: pier-splunk-configs
+    status.storage.topic: pier-splunk-status
+    key.converter.schemas.enable: false
+    value.converter.schemas.enable: false
+  authentication:
+    type: plain
+    username: $ConnectionString
+    passwordSecret:
+      secretName: pier-kafka-splunk
+      password: password
+  tls:
+    trustedCertificates: []
+  logging:
+    type: inline
+    loggers:
+      log4j.rootLogger: "INFO"
+  # resources:
+  #   requests:
+  #     cpu: "1"
+  #     memory: 3Gi
+  #   limits:
+  #     cpu: "2"
+  #     memory: 3Gi
+  template:
+    pod:
+      imagePullSecrets:
+        - name: conductorcr
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    kafka-connect: pier-kafka-splunk
+                topologyKey: topology.kubernetes.io/zone
+              weight: 100    
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    kafka-connect: pier-kafka-splunk
+                topologyKey: kubernetes.io/hostname
+              weight: 90      

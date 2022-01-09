@@ -1,0 +1,49 @@
+image: desenvolvimento.azurecr.io/prepaid/exchange
+version: ${version}
+enviroments:
+  values: 
+    APP_PROFILE: dev
+    CACHE_PREFIX: exchange
+    CACHE_TYPE: ristretto
+    DATABASE_CONNECTIONURI: #{EXCHANGE_VNEXT_HMLE_DATABASE_CONNECTURI}#
+    DATABASE_MIGRATIONPRINCIPAL_MAXIMUMPOOLSIZE: 2
+    DATABASE_MIGRATIONPRINCIPAL_MINIMUMIDLE: 1
+    DATABASE_SHOWSQL: false 
+    DATABASE_TIMEZONE: UTC
+    LOG_LEVEL: info
+    REDIS_DB: 3
+    REDIS_URL: #{EXCHANGE_VNEXT_HMLE_REDIS_URL}#
+    SPLUNK_ENABLED: true
+    SPLUNK_SKIPTLS: true
+    SPLUNK_SOURCE: exchange
+    SPLUNK_URL: #{EXCHANGE_VNEXT_HMLE_SPLUNK_URL}#
+    SWAGGER_IP: #{EXCHANGE_VNEXT_HMLE_SWAGGER_IP}#
+    SWAGGER_PORT: #{EXCHANGE_VNEXT_HMLE_SWAGGER_PORT}#
+
+  secrets:
+    DATABASE_PASSWORD: #{EXCHANGE_VNEXT_HMLE_DATABASE_PASSWORD}#
+    DATABASE_USER: #{EXCHANGE_VNEXT_HMLE_DATABASE_USER}#
+    REDIS_PASSWORD: #{EXCHANGE_VNEXT_HMLE_REDIS_PASSWORD}#
+    SPLUNK_TOKEN: #{EXCHANGE_VNEXT_HMLE_SPLUNK_TOKEN}#
+
+resources:
+  limits:
+    cpu: 4
+    memory: 521Mi
+  requests: 
+    cpu: 100m
+    memory: 256Mi
+
+registry:
+  servers:
+    - name: desenvolvimento
+      server: desenvolvimento.azurecr.io
+      username: desenvolvimento
+      password: #{VNEXT_HMLE_REGISTRY_PASSWORD}#
+
+namespace:
+# Create namespace
+  create: false
+istio:
+  enabled: true 
+

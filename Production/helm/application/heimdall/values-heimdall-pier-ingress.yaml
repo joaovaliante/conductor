@@ -1,0 +1,2 @@
+rancherEndpoint:
+  externalName: ingress-nginx-pier-controller.ingress-nginx.svc.cluster.local

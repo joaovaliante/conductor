@@ -1,0 +1,48 @@
+trigger: none
+
+variables:
+  - group: kubernetes-base
+  - group: production-azure
+  - group: production-kubernetes
+  - group: production-mimir
+  - group: production-harness
+  - group: production-autoseg
+  - group: csp-infra-1
+
+stages:
+  - template: ../../../../templates/terraform.yaml
+    parameters:
+      directory: ./terraform/$(CLOUD)/kubernetes/$(PROJECT_NAME)
+      jobEnvironment: "$(JOB_ENVIRONMENT)"
+      environment: "$(ENVIRONMENT)"
+      stateName: "Infrastructure"
+
+  - template: ../../../../templates/terraform.yaml
+    parameters:
+      directory: ./terraform/application/$(PROJECT_NAME)
+      jobEnvironment: "$(JOB_ENVIRONMENT)"
+      environment: "$(ENVIRONMENT)"
+      stateName: "Application"
+
+      preSteps:
+        - task: DownloadSecureFile@1
+          name: certificate_key
+          displayName: 'Download Certificate Key'
+          inputs:
+            secureFile: 'conductor.key'
+
+        - task: DownloadSecureFile@1
+          name: certificate_pem
+          displayName: 'Download Certificate'
+          inputs:
+            secureFile: 'conductor.pem'
+
+      beforeExecute: |
+        CERT_KEY_PATH="$(certificate_key.secureFilePath)"
+        CERT_PEM_PATH="$(certificate_pem.secureFilePath)"
+        CERT_KEY_VALUE=$(cat $CERT_KEY_PATH | base64)
+        CERT_PEM_VALUE=$(cat $CERT_PEM_PATH | base64)
+
+      arguments:
+        - '-var=rancher_tls_cert="${CERT_PEM_VALUE}"'
+        - '-var=rancher_tls_key="${CERT_KEY_VALUE}"'

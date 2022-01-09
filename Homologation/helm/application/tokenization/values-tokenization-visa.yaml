@@ -1,0 +1,8 @@
+replicas: 1
+image: desenvolvimento.azurecr.io/tokenization-visa
+version: 42574
+
+autoScale:
+  enabled: true 
+
+

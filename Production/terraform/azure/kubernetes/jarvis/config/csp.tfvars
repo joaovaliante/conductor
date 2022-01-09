@@ -1,0 +1,11 @@
+subscription                        = "a4212e99-5f1e-474a-9b81-a689fbb09925"
+cluster_name                        = "jarvis-falcon"
+location                            = "Brazil South"
+resource_group_name                 = "falconhosts"
+kubernetes_version                  = "1.18.14"
+subnet_name                         = "AZ1P-SUBNET-FALCON-KUBERNETES"
+virtual_network_name                = "AZ1P-VNET"
+virtual_network_resource_group_name = "Network"
+rancher_url                         = "https://rancher.conductor.com.br"
+kafka_enabled                       = true
+jarvis_enabled                      = true

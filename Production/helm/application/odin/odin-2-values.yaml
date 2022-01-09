@@ -1,0 +1,105 @@
+productionDeployment:
+  datadog:    
+    command: 
+     - java 
+     - -javaagent:/opt/datadog-agent/dd-java-agent-0.68.0.jar 
+     - -Ddd.profiling.enabled=true 
+     - -Ddd.logs.injection=true 
+     - -Ddd.trace.analytics.enabled=true 
+     - -Ddd.service=odin      
+     - -Ddd.env=odin-secundario-k8s  
+     - -jar 
+     - /odin/odin.jar
+
+  enviroments:    
+    defaults:             
+      SPRING_RABBITMQ_VIRTUAL_HOST: odin_secundario_1      
+      INFO_APP_NAME: ODIN_SECUNDARIO_K8S  
+      SPRING_PROFILES_ACTIVE: prod
+  
+canaryDeployment:  
+  datadog:    
+    command: 
+     - java 
+     - -javaagent:/opt/datadog-agent/dd-java-agent-0.68.0.jar 
+     - -Ddd.profiling.enabled=true 
+     - -Ddd.logs.injection=true 
+     - -Ddd.trace.analytics.enabled=true 
+     - -Ddd.service=odin      
+     - -Ddd.env=odin-secundario-k8s
+     - -jar 
+     - /odin/odin.jar
+
+  enviroments:    
+    defaults:       
+      SPRING_RABBITMQ_VIRTUAL_HOST: odin_secundario_1            
+      INFO_APP_NAME: ODIN_SECUNDARIO_K8S    
+      SPRING_PROFILES_ACTIVE: prod
+
+asyncDeployment:
+  datadog:    
+    command: 
+     - java 
+     - -javaagent:/opt/datadog-agent/dd-java-agent-0.68.0.jar 
+     - -Ddd.profiling.enabled=true 
+     - -Ddd.logs.injection=true 
+     - -Ddd.trace.analytics.enabled=true 
+     - -Ddd.service=odin      
+     - -Ddd.env=odin-secundario-k8s   
+     - -jar 
+     - /odin/odin.jar
+
+  enviroments:    
+    defaults:       
+      SPRING_RABBITMQ_VIRTUAL_HOST: odin_secundario_1
+      INFO_APP_NAME: ODIN_SECUNDARIO_K8S
+      SPRING_PROFILES_ACTIVE: prod
+
+rabbitmq:
+  definitions: |
+    {
+      "rabbit_version": "3.8.0",
+      "users": [{
+        "name": "guest",
+        "password_hash": "57+6XOUcOncH7OeC9OwLQ6vofB1aOyzVmbxtoji4KXjb9s2P",
+        "hashing_algorithm": "rabbit_password_hashing_sha256",
+        "tags": "administrator"
+      }],
+      "vhosts": [{
+        "name": "odin_secundario_1"
+      }, 
+      {
+        "name": "odin_secundario_2"
+      },
+      {
+        "name": "cronohost"
+      },
+      {
+        "name": "/"
+      }],
+      "permissions": [{
+        "user": "guest",
+        "vhost": "/",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      }, {
+        "user": "guest",
+        "vhost": "odin_secundario_1",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      }, {
+        "user": "guest",
+        "vhost": "odin_secundario_2",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      }, {
+        "user": "guest",
+        "vhost": "cronohost",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      }]
+    }  

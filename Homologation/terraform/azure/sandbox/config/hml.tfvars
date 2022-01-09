@@ -1,0 +1,5 @@
+subscription             = "e5240c8f-ec4f-4bd4-a36e-1981d27dd8e1"
+location                 = "South Central US"
+resource_group_name      = "RG_Geeks_SouthCentralUS"
+key_vault_name           = "AZ2E-CONDOMHML-KEYVAULT"
+sandbox_dock_gke_address = "35.229.84.92"

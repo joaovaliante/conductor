@@ -1,0 +1,162 @@
+##### SGR-CORE #####
+core:
+  replicas: 1
+  image: ${image}
+  version: ${version}
+
+  enviroments:
+    # non sensitive variables
+    values:
+      AZURE_STORAGE_ACCESS_KEY: 86u6snKpf1l8ExrU0WKhrbjGelbq3zlsbq0DLNmtFu1XCtLDc8RXHtH1QnXdMCMIFMi7W3HNFHFr/ygKm8ByCw==
+      AZURE_STORAGE_ACCOUNT: az1pblobsgrlogs
+      AZURE_STORAGE_CONTAINER_NAME: testdev
+      QUARTZ_DATASOURCEURL: jdbc:jtds:sqlserver://10.19.20.21:1433;databaseName=SGR_CORE_HMLG_161_NEW;appName=SGR_CORE_QUARTZ
+      QUARTZ_DATASOURCEUSER: sgr.sql
+      REDIS_HOST: redis.sgr-hmlg
+      REDIS_NAMESPACE: sgr-hmlg
+      SENTRY_DSN: http://05128368f8d2448da02d6094eaae8bf1:a8001c74f79747bbadce048fd0fc1747@10.50.10.30:9000/8
+      SENTRY_ENVIRONMENT: homologacao-hmlg
+      SGR.POOL.INITIALIZATIONFAILTIMEOUT: 0
+      SGR_AD_ADMIN: sgr.admin
+      SGR_AD_DOMAIN: conductor.tecnologia
+      SGR_AD_PORTA: 389
+      SGR_ALIAS_CERTIFICADO: conductor_hmlg
+      SGR_DATABASENAME: SGR_CORE_HMLG_161_NEW
+      SGR_JMS_ACTIVEMQ_BROKER_URL: broker:(tcp://activemq.sgr-hmlg:61616)
+      SGR_JMS_ACTIVEMQ_URL: tcp://activemq.sgr-hmlg:61616
+      SGR_NAME: sgrdevcore
+      SGR_PATH_CERTIFICADO_PRIVADO: /sgr/cert     
+      SGR_PATH_CERTIFICADO_PUBLICO: /sgr/certificados(nao_apagar)/aplicacao/conductor_hmlg_sgr.crt
+      SGR_RABBIT_HOST: rabbitmq-cluster.rabbitmq
+      SGR_RABBIT_QUEUE_PROCJOB: hmlg_161
+      SGR_RABBIT_USER: guest
+      SGR_RABBIT_VIRTUALHOST_PROCJOB: hmlg_161
+      SGR_SERVERNAME: 10.19.20.21
+      SGR_STORE_FILA_SNAPSHOTS: store.queue-plugins-snapshots.hmlg
+      SGR_STORE_URL_RELEASES: http://sgr-store-api.sgr-store:9090/api/plugins/releases/v2/
+      SGR_STORE_URL_SNAPSHOTS: http://sgr-store-api.sgr-store:9090/api/plugins/snapshots/v2/
+      SGR_USER: sgr.sql
+      SPRING_PROFILES_ACTIVE: sgrhmlg
+      SPRING_REDIS_HOST: redis.sgr-hmlg
+    # sensitive variables
+    # secrets: 
+    #   SGR_AD_ADPASSWORD: #{SGR_AD_ADPASSWORD}#
+    #   SGR_PASSWORD: #{SGR_PASSWORD}#
+    #   SGR_PASSWORD_CERTIFICADO: #{SGR_PASSWORD_CERTIFICADO}#
+    #   QUARTZ_DATASOURCEPASSWORD: #{QUARTZ_DATASOURCEPASSWORD}#
+
+  service:
+    type: LoadBalancer
+    loadBalancerIP: 
+    port: 8080
+    
+    labels: {} 
+    annotations: {}
+
+##### SGR-MERGE #####
+merge:
+  replicas: 1
+  image: ${image}
+  version: ${version}
+ 
+  enviroments:
+    # non sensitive variables
+    values:
+      QUARTZ_DATASOURCEURL: jdbc:jtds:sqlserver://10.19.20.21:1433;databaseName=SGR_CORE_HMLG_161_NEW;appName=SGR_CORE_QUARTZ
+      QUARTZ_DATASOURCEUSER: sgr.sql
+      REDIS_HOST: redis.sgr-hmlg
+      REDIS_NAMESPACE: sgr-hmlg
+      SENTRY_ENVIRONMENT: homologacao-hmlg
+      SGR.POOL.INITIALIZATIONFAILTIMEOUT: 0
+      SGR_AD_ADMIN: sgr.admin
+      SGR_AD_DOMAIN: conductor.tecnologia
+      SGR_AD_PORTA: 389
+      SGR_ALIAS_CERTIFICADO: conductor_hmlg
+      SGR_DATABASENAME: SGR_CORE_HMLG_161_NEW
+      SGR_JMS_ACTIVEMQ_BROKER_URL: broker:(tcp://activemq.sgr-hmlg:61616)
+      SGR_JMS_ACTIVEMQ_STANDALONE: false
+      SGR_JMS_ACTIVEMQ_URL: tcp://activemq.sgr-hmlg:61616
+      SGR_PATH_CERTIFICADO_PRIVADO: /sgr/certificados(nao_apagar)/aplicacao/conductor_hmlg_sgr.pfx
+      SGR_PATH_CERTIFICADO_PUBLICO: /sgr/certificados(nao_apagar)/aplicacao/conductor_hmlg_sgr.crt
+      SGR_RABBIT_HOST: rabbitmq-cluster.rabbitmq
+      SGR_RABBIT_QUEUE_PROCJOB: hmlg_161
+      SGR_RABBIT_VIRTUALHOST_PROCJOB: hmlg_161
+      SGR_SERVERNAME: 10.19.20.21
+      SGR_STORE_EXCHANGE: sgr.exchange-api-plugins
+      SGR_STORE_FILA_SNAPSHOTS: store.queue-plugins-snapshots
+      SGR_STORE_URL_RELEASES: http://sgr-store-api.sgr-store:9090/api/plugins/releases/v2/
+      SGR_STORE_URL_SNAPSHOTS: http://sgr-store-api.sgr-store:9090/api/plugins/snapshots/v2/
+      SGR_TIMEZONE: America/Recife
+      SGR_USER: sgr.sql
+      SPRING_PROFILES_ACTIVE: workerhmlg
+      SPRING_REDIS_HOST: redis.sgr-hmlg
+    # sensitive variables
+    # secrets:
+    #   SGR_AD_ADPASSWORD: #{SGR_AD_ADPASSWORD}#
+    #   SGR_PASSWORD: #{SGR_PASSWORD}#
+    #   SGR_PASSWORD_CERTIFICADO: #{SGR_PASSWORD_CERTIFICADO}#
+    #   QUARTZ_DATASOURCEPASSWORD: #{QUARTZ_DATASOURCEPASSWORD}#
+
+##### SGR-WORKER #####
+worker:
+  replicas: 1
+  image: ${image}
+  version: ${version}
+             
+  enviroments:
+    # non sensitive variables
+    values:
+      QUARTZ_DATASOURCEURL: jdbc:jtds:sqlserver://10.19.20.21:1433;databaseName=SGR_CORE_HMLG_161_NEW;appName=SGR_CORE_QUARTZ
+      QUARTZ_DATASOURCEUSER: sgr.sql
+      REDIS_HOST: redis.sgr-hmlg
+      REDIS_NAMESPACE: sgr-hmlg
+      SENTRY_ENVIRONMENT: homologacao-hmlg
+      SGR_AD_ADMIN: sgr.admin
+      SGR_AD_DOMAIN: conductor.tecnologia
+      SGR_AD_PORTA: 389
+      SGR_DATABASENAME: SGR_CORE_HMLG_161_NEW
+      SGR_JMS_ACTIVEMQ_BROKER_URL: broker:(tcp://activemq.sgr-hmlg:61616)
+      SGR_JMS_ACTIVEMQ_STANDALONE: false
+      SGR_JMS_ACTIVEMQ_URL: tcp://activemq.sgr-hmlg:61616
+      SGR_PATH_CERTIFICADO_PRIVADO: /sgr/certificados(nao_apagar)/aplicacao/conductor_hmlg_sgr.pfx
+      SGR_PATH_CERTIFICADO_PUBLICO: /sgr/certificados(nao_apagar)/aplicacao/conductor_hmlg_sgr.crt
+      SGR_RABBIT_HOST: rabbitmq-cluster.rabbitmq
+      SGR_RABBIT_PORT: 5672
+      SGR_RABBIT_QUEUE_PROCJOB: hmlg_161
+      SGR_RABBIT_VIRTUALHOST_PROCJOB: hmlg_161
+      SGR_SERVERNAME: 10.19.20.21
+      SGR_STORE_URL_RELEASES: http://sgr-store-api.sgr-store:9090/api/plugins/releases/v2/
+      SGR_STORE_URL_SNAPSHOTS: http://sgr-store-api.sgr-store:9090/api/plugins/snapshots/v2/
+      SGR_USER: sgr.sql
+      SPRING_PROFILES_ACTIVE: workerhmlg
+      SPRING_REDIS_HOST: redis.sgr-hmlg
+    # sensitive variables
+    # secrets:
+    #   SGR_AD_ADPASSWORD: #{SGR_AD_ADPASSWORD}#
+    #   SGR_PASSWORD: #{SGR_PASSWORD}#
+    #   SGR_PASSWORD_CERTIFICADO: #{SGR_PASSWORD_CERTIFICADO}#
+    #   QUARTZ_DATASOURCEPASSWORD: #{QUARTZ_DATASOURCEPASSWORD}#
+
+registry:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: ${registry_password}
+
+storage:
+  # Create PVC
+  create: true
+  size: 40Gi
+  className: standard
+
+redis:
+  enabled: false
+            
+rabbitmq:
+  enabled: false
+
+activemq:
+  enabled: true
+  name: activemq
+  namespace:
+    create: true

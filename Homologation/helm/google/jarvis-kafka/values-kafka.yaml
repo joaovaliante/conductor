@@ -1,0 +1,17 @@
+cp-zookeeper:
+  service:
+    annotations: 
+      cloud.google.com/load-balancer-type: Internal
+      networking.gke.io/internal-load-balancer-allow-global-access: "true" 
+
+cp-kafka:
+  service:
+    annotations: 
+      cloud.google.com/load-balancer-type: Internal
+      networking.gke.io/internal-load-balancer-allow-global-access: "true" 
+
+cp-kafka-connect:
+  service:
+    annotations: 
+      cloud.google.com/load-balancer-type: Internal
+      networking.gke.io/internal-load-balancer-allow-global-access: "true" 

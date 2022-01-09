@@ -1,0 +1,44 @@
+replicas: 1
+
+imagePullSecret: conductorcr
+image: mcr.microsoft.com/mssql/server
+version:  2017-latest
+
+readinessProbe: 
+
+startupProbe: 
+
+livenessProbe: 
+
+enviroments:
+  values: 
+    ACCEPT_EULA: true
+    massql_agent_enabled: true
+    sa_password: Pass@word
+
+service:
+    type: LoadBalancer
+    loadBalancerIP: 
+    port: 1433
+    name: http
+    targetPort: http
+
+namespace:
+  # Create namespace
+  create: false
+  labels: {}
+  annotations: {}  
+
+registry:
+  servers:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: ${registry_password}
+
+storage:
+  #Create PVC
+  create: true
+  size: 5Gi
+  className: standard
+  accessMode: ReadWriteOnce

@@ -1,0 +1,55 @@
+api:
+  enviroments:
+    # non sensitive variables
+    values:
+      HEIMDALL_MIDDLEWARES_ALLOWINACTIVE: "10"
+      SPRING_RABBITMQ_VIRTUAL-HOST: "heimdall-hmlgi-hp"
+      
+    secrets:
+      HEIMDALL_DATASOURCE_SERVERNAME: #{HP_HEIMDALL_DATASOURCE_SERVERNAME}#
+      HEIMDALL_DATASOURCE_USERNAME: #{HP_HEIMDALL_DATASOURCE_USERNAME}#
+      HEIMDALL_DATASOURCE_PASSWORD: #{HP_HEIMDALL_DATASOURCE_PASSWORD}#
+
+frontend:
+
+  enviroments:
+    # non sensitive variables
+    values:
+      RECAPTCHA_ENABLED: "true"
+      RECAPTCHA_SITE_KEY: "6LfJgywaAAAAACIBru0XDhJV-JjN6UHpq9BhSiDA"
+
+  service:
+    type: ClusterIP
+    ports:
+      - name: 5000tcp
+        targetPort: 5000
+    labels:
+      app: heimdall-frontend
+      
+  ingress:
+    enabled: true  
+
+    annotations: 
+      kubernetes.io/ingress.class: "nginx"
+      nginx.ingress.kubernetes.io/service-upstream: "true"
+
+    hosts:
+      - url: "heimdall-captcha.devcdt.com.br"
+    
+    tls:
+      enabled: false
+      
+gateway:
+
+  enviroments:
+    # non sensitive variables
+    values:
+      HEIMDALL_DATASOURCE_DATABASENAME: "HEIMDALL_HMLG_EXT"
+      HEIMDALL_MIDDLEWARE_DELETEDEPRECATED: "true"
+      HEIMDALL_MIDDLEWARES_ALLOWINACTIVE: "10"
+      SPRING_RABBITMQ_VIRTUAL-HOST: "heimdall-hmlgi-hp"
+
+    secrets:
+      HEIMDALL_DATASOURCE_SERVERNAME: #{HP_HEIMDALL_DATASOURCE_SERVERNAME}#
+      HEIMDALL_DATASOURCE_USERNAME: #{HP_HEIMDALL_DATASOURCE_USERNAME}#
+      HEIMDALL_DATASOURCE_PASSWORD: #{HP_HEIMDALL_DATASOURCE_PASSWORD}#

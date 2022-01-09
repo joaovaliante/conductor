@@ -1,0 +1,11 @@
+service:
+  annotations: 
+    cloud.google.com/load-balancer-type: Internal
+    networking.gke.io/internal-load-balancer-allow-global-access: "true"  
+      
+  monitor: 
+    prometheusRule:
+      default: 
+        additionalRuleLabels: 
+          cloud: google
+          cluster: ${cluster_name}

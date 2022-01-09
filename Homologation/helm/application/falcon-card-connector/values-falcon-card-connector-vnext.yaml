@@ -1,0 +1,39 @@
+replicas: 0
+image:  desenvolvimento.azurecr.io/vnext/falcon-card-connector-pci
+version: ${version}
+enviroments:
+  values: 
+    JARVIS_BASEPATH: #{FALCON_CARD_CONNECTOR_VNEXT_HMLE_JARVIS_BASEPATH}#
+    KAFKA_BROKERS: #{FALCON_CARD_CONNECTOR_VNEXT_HMLE_KAFKA_BROKERS}#
+    KAFKA_CONSUMER_GROUPID: #{FALCON_CARD_CONNECTOR_VNEXT_HMLE_KAFKA_CONSUMER_GROUPID}#
+    PIERCARDS_URL: #{FALCON_CARD_CONNECTOR_VNEXT_HMLE_PIERCARDS_URL}#
+    SPLUNK_ENABLED: true
+
+  secrets:
+    SPLUNK_TOKEN: #{FALCON_CARD_CONNECTOR_VNEXT_HMLE_SPLUNK_TOKEN}#
+
+resources:
+  limits:
+    cpu: 4
+    memory: 512Mi
+  requests: 
+    cpu: 100m
+    memory: 256Mi
+
+startupProbe:
+  httpGet:
+    path: /v1/manager/health
+    port: http
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  failureThreshold: 10
+
+registry:
+  servers:
+    - name: desenvolvimento
+      server: desenvolvimento.azurecr.io
+      username: desenvolvimento
+      password: #{VNEXT_HMLE_REGISTRY_PASSWORD}#
+
+istio:
+  enabled: true 

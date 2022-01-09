@@ -1,0 +1,114 @@
+replicas: 1
+image: conductorcr.azurecr.io/pierlabs-hmlg/pier-api
+version: 2.212.0
+
+versioned:
+  enabled: false
+  version: 2.212.0
+  replicas: 4
+
+autoScale:
+  maxReplicas: 20
+
+resources: 
+  requests:
+    cpu: "1"
+    memory: 4Gi
+
+nodeSelector:
+  ${node_name}: "true"
+
+registry:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: #{REGISTRY_PASSWORD}#
+
+enviroments:
+  values:
+    DATADOG_ENABLED: "true"
+    DD_AGENT_HOST: "datadog-cluster-agent.datadog"
+    DD_LOGS_INJECTION: "true"
+    DD_PROFILING_ENABLED: "true"
+    DD_SERVICE: "pier"
+    LOGGING_LEVEL_BR_COM_CONDUCTOR: "INFO"
+    MANAGEMENT_HEALTH_MAIL_ENABLED: "false" 
+    PIER_CIPHER_PATH: "http://10.75.30.90:8080"
+    PIER_DATASOURCE_EXECUTELIQUIBASE: "true"
+    PIER_DATASOURCE_PIER_DATABASENAME: "PIER_HMLG"
+    PIER_DATASOURCE_PIER_SERVERNAME: "10.75.33.235"
+    PIER_DATASOURCE_CEP_SERVERNAME: "10.75.33.164"
+    PIER_ENCRYPT_ENABLED: "true"
+    PIER_JOB_EXECUTEJOB: "false"
+    PIER_SPLUNK_LOGS_ENABLED: "true"
+    PIER_SPLUNK_LOGS_HOST: 10.70.30.11
+    PIER_SPLUNK_LOGS_PORT: "9090"
+    PIER_WSDL_PORTALWS: http://10.8.3.65:25781/Portal_WS.asmx?wsdl
+    SERVER_PORT: "8181"
+    SPRING_JPA_SHOW_SQL: "false"
+    SPRING_PROFILES_ACTIVE: hmlg
+    PIER_RABBIT_VIRTUALHOST: "pier-hmle"
+    SWAGGER_PROTOCOL: https
+    PIER_ENVIRONMENT: ${pier_environment}
+    SERVER_TOMCAT_THREADS_MAX: 500
+  secrets:
+    PIER_DATASOURCE_PIER_PASSWORD: #{PIER_DATASOURCE_PIER_PASSWORD}#
+    PIER_DATASOURCE_PIER_USERNAME: #{PIER_DATASOURCE_PIER_USERNAME}#
+
+rancherEndpoint:
+  enabled: false  
+
+ingress:
+  enabled: true  
+  annotations: 
+    kubernetes.io/ingress.class: "${ingress_class}"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "25"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "25"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "25"  
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+  hosts:
+     - url: ${pier_dns}
+
+  tls:
+    enabled: true
+    hosts:
+      - url: ${pier_dns}
+        secret: pier-cert
+        cert: <setted by terraform>
+        key: <setted by terraform>
+  
+redis:
+  replicas: 3
+  version: "6.0"
+  cluster: true
+
+  nodeSelector:
+    ${node_name}: "true"
+
+  monitor:
+    dashboard:
+      enabled: false
+
+    prometheusRule:
+      enabled: false
+  
+rabbitmq:
+  registry:
+    - name: conductorcr
+      server: conductorcr.azurecr.io
+      username: conductorcr
+      password: #{REGISTRY_PASSWORD}#
+
+  nodeSelector:
+    ${node_name}: "true"
+
+  monitor:
+    dashboard:
+      enabled: false
+
+    prometheusRule:
+      enabled: false    
+      
+  service:
+    type: LoadBalancer

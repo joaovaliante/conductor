@@ -1,0 +1,2464 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Account API",
+        "version": "1.0",
+        "description": "Documentação da api de contas"
+    },
+    "host": "vnext.conductor.com.br",
+    "basePath": "/account/v1",
+    "schemes": [
+        "https"
+    ],
+    "securityDefinitions": {
+        "apiKeyHeader": {
+            "type": "apiKey",
+            "name": "Ocp-Apim-Subscription-Key",
+            "in": "header"
+        },
+        "apiKeyQuery": {
+            "type": "apiKey",
+            "name": "subscription-key",
+            "in": "query"
+        }
+    },
+    "security": [
+        {
+            "apiKeyHeader": []
+        },
+        {
+            "apiKeyQuery": []
+        }
+    ],
+    "x-servers": [
+        {
+            "url": "https://vnext.conductor.com.br"
+        },
+        {
+            "url": "https://cts.conductor.com.br"
+        }
+    ],
+    "paths": {
+        "/accounts": {
+            "get": {
+                "description": "Displays all Account registered on the API, based on filters and pagination.\nIssuer resources can be used to create (\"/accounts\" POST), update (\"/accounts/{id}\" PUT).",
+                "operationId": "get-accounts",
+                "summary": "List Account",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page of the current result set",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Amount of data that should be returned",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Attribute to order the list (e.g. 'account_type_id', 'status_id DESC', 'bank ASC', 'id DESC, agency', 'created_at', 'updated_at')",
+                        "type": "string"
+                    },
+                    {
+                        "name": "metadata",
+                        "in": "query",
+                        "description": "Find accounts by metadata. (Ex:. )",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "Account not found"
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new Account",
+                "operationId": "post-accounts",
+                "summary": "Create a account",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "account.AccountPersist",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/account.AccountPersist"
+                        },
+                        "description": "Object for persisting the account"
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                }
+            }
+        },
+        "/accounts/balances/types": {
+            "get": {
+                "description": "Displays all balances types registered on the API, based on filters and pagination.\nIssuer resources can be used to create (\"/accounts/balances/types\" POST), update (\"/accounts/balances/types/{id}\" PUT).",
+                "operationId": "get-accounts-balances-types",
+                "summary": "List Balances Types",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page of the current result set",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Amount of data that should be returned",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Attribute to order the list (e.g. 'name', 'created_at DESC', 'updated_at ASC', 'id DESC, description')",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new Balance Type",
+                "operationId": "post-accounts-balances-types",
+                "summary": "Create a balance type",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "balance.BalanceTypePersist",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/balance.BalanceTypePersist"
+                        },
+                        "description": "Object for persisting the balance type"
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                }
+            }
+        },
+        "/accounts/types": {
+            "get": {
+                "description": "Displays all Account Types registered on the API, based on filters and pagination.\nIssuer resources can be used to create (\"/accounts/type\" POST), update (\"/accounts/type/{id}\" PUT).",
+                "operationId": "get-accounts-types",
+                "summary": "List Account Types",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page of the current result set",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Amount of data that should be returned",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Attribute to order the list (e.g. 'name', 'description DESC', 'created_at ASC', 'id DESC, updated_at')",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new Account Type",
+                "operationId": "post-accounts-types",
+                "summary": "Create a account type",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "account.AccountTypePersist",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/account.AccountTypePersist"
+                        },
+                        "description": "Object for persisting the account type"
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                }
+            }
+        },
+        "/accounts/{id}": {
+            "get": {
+                "description": "Return Account by identification",
+                "operationId": "get-accounts-id",
+                "summary": "Find Account by id",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The identifier for the Account",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            },
+            "delete": {
+                "description": "Whenever you no longer want to receive messages on your API, simply delete it",
+                "operationId": "delete-accounts-id",
+                "summary": "Delete a account",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The identifier for the account",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted"
+                    },
+                    "204": {
+                        "description": "Account not found"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "patch": {
+                "description": "Updates a account",
+                "operationId": "patch-accounts-id",
+                "summary": "Update a account",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The identifier for the account",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "account.AccountRequest",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/account.AccountRequest"
+                        },
+                        "description": "Object for updating a account"
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "204": {
+                        "description": "account not found"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/balances": {
+            "get": {
+                "description": "Displays all Balances of this account registered on the API, based on filters and pagination.\nIssuer resources can be used to create (\"/accounts/{id}/balance\" POST), update (\"/accounts/{id}/balance/{balanceID}\" PUT).",
+                "operationId": "get-accounts-id-balances",
+                "summary": "List Balances",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The identifier for the account",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page of the current result set",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Amount of data that should be returned",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Attribute to order the list (e.g. 'amount', 'balance_type_id ASC', 'id DESC, 'updated_at')",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new Balance to account",
+                "operationId": "post-accounts-id-balances",
+                "summary": "Create a balance",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The identifier for the account",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "balance.BalancePersist",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/balance.BalancePersist"
+                        },
+                        "description": "Object for persisting the balance"
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                }
+            }
+        },
+        "/manager/health": {
+            "get": {
+                "description": "Checks the API and it's components health",
+                "operationId": "get-manager-health",
+                "summary": "Check health",
+                "tags": [
+                    "Management"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/accounts/balances": {
+            "get": {
+                "description": "Displays all Balances registered on the API, based on filters and pagination.\nIssuer resources can be used to create (\"/accounts/{id}/balance\" POST), update (\"/accounts/{id}/balance/{balanceID}\" PUT).",
+                "operationId": "get-accounts-balances",
+                "summary": "List Balances",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page of the current result set",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Amount of data that should be returned",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Attribute to order the list (e.g. 'balance_type_id', 'account_id DESC', 'amount ASC', 'id DESC, created_at', 'updated_at')",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/accounts/balances/types/{id}": {
+            "get": {
+                "description": "Return Balance Type by identification",
+                "operationId": "get-accounts-balances-types-id",
+                "summary": "Find Balance Type by id",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The identifier for the Balance type",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates a balance type",
+                "operationId": "put-accounts-balances-types-id",
+                "summary": "Update a balance type",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The identifier for the balance type",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "balance.BalanceTypePersist",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/balance.BalanceTypePersist"
+                        },
+                        "description": "Object for updating a balance type"
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "204": {
+                        "description": "account not found ou balance not found"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "delete": {
+                "description": "Whenever you no longer want to receive messages on your API, simply delete it",
+                "operationId": "delete-accounts-balances-types-id",
+                "summary": "Delete a balance type",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The identifier for the balance type",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted"
+                    },
+                    "204": {
+                        "description": "Account not found"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/accounts/credit-limits/types": {
+            "get": {
+                "description": "Displays all credit limit types registered on the API, based on filters and pagination.\nIssuer resources can be used to create (\"/accounts/credit-limits/types\" POST), update (\"/accounts/credit-limits/types/{id}\" PUT).",
+                "operationId": "get-accounts-credit-limits-types",
+                "summary": "List credit limit types",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page of the current result set",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Amount of data that should be returned",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Attribute to order the list (e.g. 'name', 'created_at DESC', 'updated_at ASC', 'id DESC, description')",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new credit limit type",
+                "operationId": "post-accounts-credit-limits-types",
+                "summary": "Create a credit limit type",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "creditlimit.TypePersist",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/creditlimit.TypePersist"
+                        },
+                        "description": "Object for persisting the credit limit type"
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                }
+            }
+        },
+        "/accounts/credit-limits/types/{id}": {
+            "get": {
+                "description": "Return credit limit  Type by identification",
+                "operationId": "get-accounts-credit-limits-types-id",
+                "summary": "Find credit limit type by Id",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The identifier for the credit limit type",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            }
+        },
+        "/accounts/status": {
+            "get": {
+                "description": "Displays all Account registered on the API, based on filters and pagination.\nIssuer resources can be used to create (\"/accounts/status\" POST), update (\"/accounts/status/{id}\" PUT).",
+                "operationId": "get-accounts-status",
+                "summary": "List Status",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page of the current result set",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Amount of data that should be returned",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Attribute to order the list (e.g. 'eventType', 'eventType DESC', 'status ASC', 'id DESC, status')",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "Account not found"
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new status",
+                "operationId": "post-accounts-status",
+                "summary": "Create a status",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "account.StatusPersist",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/account.StatusPersist"
+                        },
+                        "description": "Object for persisting the status"
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                }
+            }
+        },
+        "/accounts/status/{id}": {
+            "get": {
+                "description": "Return Status by identification",
+                "operationId": "get-accounts-status-id",
+                "summary": "Find Status by id",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The identifier for the status",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates a status",
+                "operationId": "put-accounts-status-id",
+                "summary": "Update a status",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The identifier for the account",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "account.StatusUpdate",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/account.StatusUpdate"
+                        },
+                        "description": "Object for updating a status"
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "204": {
+                        "description": "status not found"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "delete": {
+                "description": "Whenever you no longer want to receive messages on your API, simply delete it",
+                "operationId": "delete-accounts-status-id",
+                "summary": "Delete a status",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The identifier for the status",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted"
+                    },
+                    "204": {
+                        "description": "Status not found"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/accounts/types/{id}": {
+            "get": {
+                "description": "Return Account Type by identification",
+                "operationId": "get-accounts-types-id",
+                "summary": "Find Account Type by id",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The identifier for the Account Type",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates a account type",
+                "operationId": "put-accounts-types-id",
+                "summary": "Update a account type",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The identifier for the account type",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "account.AccountTypePersist",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/account.AccountTypePersist"
+                        },
+                        "description": "Object for updating a account type"
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "204": {
+                        "description": "account not found"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "delete": {
+                "description": "Whenever you no longer want to receive messages on your API, simply delete it",
+                "operationId": "delete-accounts-types-id",
+                "summary": "Delete a account type",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The identifier for the account",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted"
+                    },
+                    "204": {
+                        "description": "Account not found"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/balances/{balanceID}": {
+            "get": {
+                "description": "Return Balance by identification",
+                "operationId": "get-accounts-id-balances-balanceid",
+                "summary": "Find Balance by id",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The identifier for the account",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "balanceID",
+                        "in": "path",
+                        "description": "The identifier for the Balance",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates a balance",
+                "operationId": "put-accounts-id-balances-balanceid",
+                "summary": "Update a balance",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The identifier for the account",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "balanceID",
+                        "in": "path",
+                        "description": "The identifier for the balance",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "balance.BalancePersist",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/balance.BalancePersist"
+                        },
+                        "description": "Object for updating a balance"
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "204": {
+                        "description": "account not found"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "delete": {
+                "description": "Whenever you no longer want to receive messages on your API, simply delete it",
+                "operationId": "delete-accounts-id-balances-balanceid",
+                "summary": "Delete a balance",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The identifier for the account",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "balanceID",
+                        "in": "path",
+                        "description": "The identifier for the balance",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted"
+                    },
+                    "204": {
+                        "description": "Account not found"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "patch": {
+                "description": "Updates a balance",
+                "operationId": "patch-accounts-id-balances-balanceid",
+                "summary": "Update a balance",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The identifier for the account",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "balanceID",
+                        "in": "path",
+                        "description": "The identifier for the balance",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "balance.BalancePersist",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/balance.BalancePersist"
+                        },
+                        "description": "Object for updating a balance"
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "204": {
+                        "description": "account not found"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/credit-limits": {
+            "get": {
+                "description": "Displays all credit limit types registered on the API, based on filters and pagination.\nIssuer resources can be used to create (\"/accounts/{id}/credit-limits/\" POST), update (\"/accounts/{id}/credit-limits/{creditLimitId}\" PUT).",
+                "operationId": "get-accounts-id-credit-limits",
+                "summary": "List all credit limit assign to account",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Account Identification",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page of the current result set",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Amount of data that should be returned",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Attribute to order the list (e.g. 'name', 'created_at DESC', 'updated_at ASC', 'id DESC, description')",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new credit limit to account",
+                "operationId": "post-accounts-id-credit-limits",
+                "summary": "Create a new credit limit to account",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Account Identification",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "creditlimit.Persist",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/creditlimit.Persist"
+                        },
+                        "description": "Object for persisting the credit limit"
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/credit-limits/{creditLimitId}": {
+            "get": {
+                "description": "Return credit limit  by identification",
+                "operationId": "get-accounts-id-credit-limits-creditlimitid",
+                "summary": "Find credit limit assign to account",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Account Identification",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "creditLimitId",
+                        "in": "path",
+                        "description": "Credit Limit Identification",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            },
+            "put": {
+                "description": "Update Balance Available of Credit Limit",
+                "operationId": "put-accounts-id-credit-limits-creditlimitid",
+                "summary": "Update Balance Available of Credit Limit",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Account Identification",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "creditLimitId",
+                        "in": "path",
+                        "description": "Credit Limit Identification",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "creditlimit.UpdateAvailablePersist",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/creditlimit.UpdateAvailablePersist"
+                        },
+                        "description": "Object for persisting the balance available"
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update credit limit",
+                "operationId": "patch-accounts-id-credit-limits-creditlimitid",
+                "summary": "Update credit limit",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Account Identification",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "creditLimitId",
+                        "in": "path",
+                        "description": "Credit Limit Identification",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "creditlimit.UpdatePersist",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/creditlimit.UpdatePersist"
+                        },
+                        "description": "Object for persisting the credit limit"
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/due-dates": {
+            "get": {
+                "description": "Displays the due dates of the account",
+                "operationId": "get-accounts-id-due-dates",
+                "summary": "Displays the due dates of the account",
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Account Identification",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/due-days": {
+            "get": {
+                "description": "List all due days",
+                "operationId": "get-due-days",
+                "summary": "List all due days",
+                "tags": [
+                    "Due days"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page of the current result set",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Amount of data that should be returned",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Attribute to order the list (e.g. 'id DESC', 'createdAt DESC')",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new due day",
+                "operationId": "post-due-days",
+                "summary": "Create a new due day",
+                "tags": [
+                    "Due days"
+                ],
+                "parameters": [
+                    {
+                        "name": "dueday.Persist",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dueday.Persist"
+                        },
+                        "description": "Object for persisting the Due Day"
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                }
+            }
+        },
+        "/internals/tenants": {
+            "get": {
+                "description": "List all the tenants",
+                "operationId": "get-internals-tenants",
+                "summary": "List Tenant",
+                "tags": [
+                    "Internals"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page of the current result set",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Amount of data that should be returned",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Attribute to order the list (e.g. 'brand', 'brand DESC', 'brand ASC', 'brand DESC, status')",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new tenant allowing a new issuer to use the API. Make sure to set it up after creating it, as it's not this resource's responsibility to run migrations and add the Tenant to the application's context!",
+                "operationId": "post-internals-tenants",
+                "summary": "Create a tenant",
+                "tags": [
+                    "Internals"
+                ],
+                "parameters": [
+                    {
+                        "name": "tenants.TenantPersist",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/tenants.TenantPersist"
+                        },
+                        "description": "Object for creating a tenant"
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        },
+        "/internals/tenants/{id}": {
+            "get": {
+                "description": "Finds a tenant by its ID",
+                "operationId": "get-internals-tenants-id",
+                "summary": "Find tenant by ID",
+                "tags": [
+                    "Internals"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The identifier for the tenant",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates a tenant by its ID",
+                "operationId": "put-internals-tenants-id",
+                "summary": "Update a tenant",
+                "tags": [
+                    "Internals"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The identifier for the tenant",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "tenants.TenantPersist",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/tenants.TenantPersist"
+                        },
+                        "description": "Object for updating a tenant"
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes a tenant by its ID",
+                "operationId": "delete-internals-tenants-id",
+                "summary": "Delete a tenant",
+                "tags": [
+                    "Internals"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The identifier for the tenant",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No content"
+                    },
+                    "204": {
+                        "description": "Not found"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        },
+        "/manager/info": {
+            "get": {
+                "description": "Checks the API and it's components versioning information",
+                "operationId": "get-manager-info",
+                "summary": "Check version information",
+                "tags": [
+                    "Management"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "account.AccountPersist": {
+            "type": "object",
+            "required": [
+                "accountTypeId",
+                "statusId"
+            ],
+            "properties": {
+                "accountTypeId": {
+                    "type": "integer"
+                },
+                "agency": {
+                    "type": "integer"
+                },
+                "bank": {
+                    "type": "integer"
+                },
+                "dueDay": {
+                    "type": "integer"
+                },
+                "metadata": {
+                    "type": "string",
+                    "example": "{\"key\": value}"
+                },
+                "number": {
+                    "type": "integer"
+                },
+                "statusId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "account.AccountRequest": {
+            "type": "object",
+            "properties": {
+                "agency": {
+                    "type": "integer"
+                },
+                "bank": {
+                    "type": "integer"
+                },
+                "dueDay": {
+                    "type": "integer"
+                },
+                "metadata": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "integer"
+                },
+                "statusId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "account.AccountResponse": {
+            "type": "object",
+            "properties": {
+                "accountType": {
+                    "type": "object",
+                    "$ref": "#/definitions/account.AccountTypeResponse"
+                },
+                "agency": {
+                    "type": "integer"
+                },
+                "bank": {
+                    "type": "integer"
+                },
+                "dueDay": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "object",
+                    "$ref": "#/definitions/account.StatusResponse"
+                }
+            }
+        },
+        "account.AccountResponsePage": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "nextPage": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "prevPage": {
+                    "type": "integer"
+                },
+                "records": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/account.AccountResponse"
+                    }
+                },
+                "totalPages": {
+                    "type": "integer"
+                },
+                "totalRecords": {
+                    "type": "integer"
+                }
+            }
+        },
+        "account.AccountTypePersist": {
+            "type": "object",
+            "required": [
+                "description",
+                "name"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "account.AccountTypeResponse": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "account.AccountTypeResponsePage": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "nextPage": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "prevPage": {
+                    "type": "integer"
+                },
+                "records": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/account.AccountTypeResponse"
+                    }
+                },
+                "totalPages": {
+                    "type": "integer"
+                },
+                "totalRecords": {
+                    "type": "integer"
+                }
+            }
+        },
+        "account.DueDateResponse": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "nextDefaultDate": {
+                    "type": "string"
+                },
+                "nextRealDate": {
+                    "type": "string"
+                },
+                "postNextDefaultDate": {
+                    "type": "string"
+                },
+                "postNextRealDate": {
+                    "type": "string"
+                },
+                "previousDefaultDate": {
+                    "type": "string"
+                },
+                "previousRealDate": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "account.StatusPersist": {
+            "type": "object",
+            "required": [
+                "description",
+                "isActive",
+                "name",
+                "reversive"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "isActive": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "reversive": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "account.StatusResponse": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isActive": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "reversive": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "account.StatusResponsePage": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "nextPage": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "prevPage": {
+                    "type": "integer"
+                },
+                "records": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/account.StatusResponse"
+                    }
+                },
+                "totalPages": {
+                    "type": "integer"
+                },
+                "totalRecords": {
+                    "type": "integer"
+                }
+            }
+        },
+        "account.StatusUpdate": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "isActive": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "reversive": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "balance.BalancePersist": {
+            "type": "object",
+            "required": [
+                "balanceTypeId",
+                "currency"
+            ],
+            "properties": {
+                "balanceTypeId": {
+                    "type": "integer"
+                },
+                "currency": {
+                    "type": "string"
+                }
+            }
+        },
+        "balance.BalanceResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "balanceType": {
+                    "type": "object",
+                    "$ref": "#/definitions/balance.BalanceTypeResponse"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "balance.BalanceResponsePage": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "nextPage": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "prevPage": {
+                    "type": "integer"
+                },
+                "records": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/balance.BalanceResponse"
+                    }
+                },
+                "totalPages": {
+                    "type": "integer"
+                },
+                "totalRecords": {
+                    "type": "integer"
+                }
+            }
+        },
+        "balance.BalanceTypePersist": {
+            "type": "object",
+            "required": [
+                "description",
+                "name"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "balance.BalanceTypeResponse": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "balance.BalanceTypeResponsePage": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "nextPage": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "prevPage": {
+                    "type": "integer"
+                },
+                "records": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/balance.BalanceTypeResponse"
+                    }
+                },
+                "totalPages": {
+                    "type": "integer"
+                },
+                "totalRecords": {
+                    "type": "integer"
+                }
+            }
+        },
+        "balance.BalanceWithAccountResponse": {
+            "type": "object",
+            "properties": {
+                "account": {
+                    "type": "object",
+                    "$ref": "#/definitions/account.AccountResponse"
+                },
+                "amount": {
+                    "type": "number"
+                },
+                "balanceType": {
+                    "type": "object",
+                    "$ref": "#/definitions/balance.BalanceTypeResponse"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "balance.BalanceWithAccountResponsePage": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "nextPage": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "prevPage": {
+                    "type": "integer"
+                },
+                "records": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/balance.BalanceWithAccountResponse"
+                    }
+                },
+                "totalPages": {
+                    "type": "integer"
+                },
+                "totalRecords": {
+                    "type": "integer"
+                }
+            }
+        },
+        "creditlimit.Persist": {
+            "type": "object",
+            "required": [
+                "creditLimit",
+                "creditTypeId",
+                "currency",
+                "maxCreditLimit",
+                "minCreditLimit"
+            ],
+            "properties": {
+                "creditLimit": {
+                    "type": "number"
+                },
+                "creditTypeId": {
+                    "type": "integer"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "maxCreditLimit": {
+                    "type": "number"
+                },
+                "minCreditLimit": {
+                    "type": "number"
+                }
+            }
+        },
+        "creditlimit.Response": {
+            "type": "object",
+            "properties": {
+                "accountId": {
+                    "type": "string"
+                },
+                "balanceAvailable": {
+                    "type": "number"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "creditLimit": {
+                    "type": "number"
+                },
+                "creditLimitType": {
+                    "type": "object",
+                    "$ref": "#/definitions/creditlimit.TypeResponse"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "maxCreditLimit": {
+                    "type": "number"
+                },
+                "minCreditLimit": {
+                    "type": "number"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "creditlimit.ResponsePage": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "nextPage": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "prevPage": {
+                    "type": "integer"
+                },
+                "records": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/creditlimit.Response"
+                    }
+                },
+                "totalPages": {
+                    "type": "integer"
+                },
+                "totalRecords": {
+                    "type": "integer"
+                }
+            }
+        },
+        "creditlimit.TypePersist": {
+            "type": "object",
+            "required": [
+                "description",
+                "name"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "creditlimit.TypeResponse": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "creditlimit.TypeResponsePage": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "nextPage": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "prevPage": {
+                    "type": "integer"
+                },
+                "records": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/creditlimit.TypeResponse"
+                    }
+                },
+                "totalPages": {
+                    "type": "integer"
+                },
+                "totalRecords": {
+                    "type": "integer"
+                }
+            }
+        },
+        "creditlimit.UpdateAvailablePersist": {
+            "type": "object",
+            "properties": {
+                "balanceAvailable": {
+                    "type": "number"
+                }
+            }
+        },
+        "creditlimit.UpdatePersist": {
+            "type": "object",
+            "properties": {
+                "creditLimit": {
+                    "type": "number"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "maxCreditLimit": {
+                    "type": "number"
+                },
+                "minCreditLimit": {
+                    "type": "number"
+                }
+            }
+        },
+        "dueday.Persist": {
+            "type": "object",
+            "properties": {
+                "day": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dueday.Response": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "dueday.ResponsePage": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "nextPage": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "prevPage": {
+                    "type": "integer"
+                },
+                "records": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dueday.Response"
+                    }
+                },
+                "totalPages": {
+                    "type": "integer"
+                },
+                "totalRecords": {
+                    "type": "integer"
+                }
+            }
+        },
+        "manager.ManagerHealth": {
+            "type": "object",
+            "properties": {
+                "db": {
+                    "type": "object",
+                    "$ref": "#/definitions/manager.ManagerHealthDB"
+                },
+                "diskSpace": {
+                    "type": "object",
+                    "$ref": "#/definitions/manager.ManagerHealthDiskSpace"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "manager.ManagerHealthDB": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "manager.ManagerHealthDiskSpace": {
+            "type": "object",
+            "properties": {
+                "free": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "threshold": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "manager.ManagerInfoResponse": {
+            "type": "object",
+            "properties": {
+                "app": {
+                    "type": "object",
+                    "$ref": "#/definitions/manager.ManagerInfoResponseApp"
+                },
+                "git": {
+                    "type": "object",
+                    "$ref": "#/definitions/manager.ManagerInfoResponseGitCommit"
+                }
+            }
+        },
+        "manager.ManagerInfoResponseApp": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "profile": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "manager.ManagerInfoResponseGitCommit": {
+            "type": "object",
+            "properties": {
+                "author": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "time": {
+                    "type": "string"
+                }
+            }
+        },
+        "tenants.TenantPersist": {
+            "type": "object",
+            "properties": {
+                "dialect": {
+                    "type": "string"
+                },
+                "issuer_id": {
+                    "type": "integer"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "uri": {
+                    "type": "string"
+                },
+                "user": {
+                    "type": "string"
+                }
+            }
+        },
+        "tenants.TenantResponse": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "dialect": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "issuer_id": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "uri": {
+                    "type": "string"
+                },
+                "user": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "tags": []
+}

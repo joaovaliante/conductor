@@ -1,0 +1,10 @@
+enviroments:
+  # non sensitive variables
+  values:
+    SERVER_FORWARD-HEADERS-STRATEGY: "NONE"
+    SPRING_DATASOURCE_URL: "jdbc:postgresql://10.60.9.7:6432/hmle_service_neo?ApplicationName=NEO&prepareThreshold=0"
+    TRACE_SPLUNK_ENABLED: "false"
+
+  secrets:
+    SPRING_DATASOURCE_USERNAME: #{HP_SPRING_DATASOURCE_USERNAME}#
+    SPRING_DATASOURCE_PASSWORD: #{HP_SPRING_DATASOURCE_PASSWORD}#

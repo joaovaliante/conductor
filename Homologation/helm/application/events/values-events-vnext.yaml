@@ -1,0 +1,58 @@
+image:  desenvolvimento.azurecr.io/prepaid/events
+version: ${version}
+enviroments:
+  values: 
+    APP_PROFILE: hmlg
+    CACHE_TYPE: ristretto
+    DATABASE_CONNECTIONURI:  #{EVENTS_VNEXT_HMLE_DATABASE_CONNECTURI}#
+    DATABASE_POOLISSUERS_CONNMAXLIFETIME: 10
+    DATABASE_POOLISSUERS_MAXIDLECONNS: 2
+    DATABASE_POOLISSUERS_MAXOPENCONNS: 2
+    DATABASE_POOLPRINCIPAL_CONNMAXLIFETIME: 10
+    DATABASE_POOLPRINCIPAL_MAXIDLECONNS: 1
+    DATABASE_POOLPRINCIPAL_MAXOPENCONNS: 2
+    DATABASE_SHOWSQL: false
+    DATABASE_TIMEZONE: UTC
+    LOG_LEVEL: info
+    REDIS_DB: 8
+    REDIS_TLS: true
+    REDIS_URL: #{EVENTS_VNEXT_HMLE_REDIS_URL}#
+    SERVER_PORT: 8080
+    SPLUNK_ENABLED: true
+    SPLUNK_SKIPTLS: true
+    SPLUNK_SOURCE: events
+    SPLUNK_URL: #{EVENTS_VNEXT_HMLE_SPLUNK_URL}#
+    SWAGGER_IP: 10.70.44.35
+    SWAGGER_PORT: 80
+
+  secrets:
+    DATABASE_PASSWORD: #{EVENTS_VNEXT_HMLE_DATABASE_PASSWORD}#
+    DATABASE_USER: #{EVENTS_VNEXT_HMLE_DATABASE_USER}#
+    REDIS_PASSWORD: #{EVENTS_VNEXT_HMLE_REDIS_PASSWORD}#
+    SPLUNK_TOKEN: #{EVENTS_VNEXT_HMLE_SPLUNK_TOKEN}#
+
+resources:
+  limits:
+    cpu: 4
+    memory: 512Mi
+  requests: 
+    cpu: 100m
+    memory: 256Mi
+
+startupProbe:
+  httpGet:
+    path: /v1/manager/health
+    port: http
+  initialDelaySeconds: 60
+  periodSeconds: 5
+  failureThreshold: 3
+
+registry:
+  servers:
+    - name: desenvolvimento
+      server: desenvolvimento.azurecr.io
+      username: desenvolvimento
+      password: #{VNEXT_HMLE_REGISTRY_PASSWORD}#
+
+istio:
+  enabled: true 

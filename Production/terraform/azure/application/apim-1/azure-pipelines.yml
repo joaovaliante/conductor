@@ -1,0 +1,13 @@
+trigger: none
+
+variables:
+  - group: production-azure
+  - group: production-apim
+
+stages:
+  - template: ../../../../templates/terraform.yaml
+    parameters:
+      directory: ./terraform/$(CLOUD)/application/apim-1
+      jobEnvironment: "Production"
+      environment: "csp"
+      stateName: "Infrastructure"

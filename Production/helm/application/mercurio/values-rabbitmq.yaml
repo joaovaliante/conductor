@@ -1,0 +1,59 @@
+push: 
+  enabled: false
+
+sms: 
+  enabled: false
+
+redis:
+  enabled: false  
+
+rabbitmq:
+  enabled: true
+  image: conductorcr.azurecr.io/mercurio/mercurio-rabbitmq
+  version: ${version}
+
+  replicas: 1
+
+  enviroments:    
+    # non sensitive variables
+    values: 
+      RABBITMQ_ADDRESS: #{RABBITMQ_ADDRESS}#
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: #{RABBITMQ_USER}#
+      RABBITMQ_VIRTUALHOST: #{RABBITMQ_VIRTUALHOST}#
+      RABBITMQ_SKIP_TLS_VERIFY: "true"
+      DB_HOST: #{DB_HOST}#
+      DB_PORT: 1433
+      DB_DATABASE: #{DB_DATABASE}#
+      DB_USER: #{DB_USER}#
+      DB_SKIP_TLS_VERIFY: "true"
+      SPLUNK_ENABLED: "true"
+      SPLUNK_TOKEN: #{SPLUNK_TOKEN}#
+      SPLUNK_URL: #{SPLUNK_URL}#
+      SPLUNK_SKIP_TLS: "true"
+      SPLUNK_SOURCE: #{SPLUNK_SOURCE}#
+
+    # sensitive variables
+    secrets:
+      DB_PASSWORD: #{DB_PASSWORD}#
+      RABBITMQ_PASSWORD: #{RABBITMQ_PASSWORD}#
+
+  readinessProbe:
+    httpGet:
+      path: /v1/health/readiness
+
+  startupProbe:
+    httpGet:
+      path: /v1/health/liveness
+
+  livenessProbe:
+    httpGet:
+      path: /v1/health/liveness
+
+registry:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: ${registry_password}
+    
+

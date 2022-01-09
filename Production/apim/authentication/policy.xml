@@ -1,0 +1,342 @@
+<policies>
+    <inbound>
+        <base />
+        <set-variable name="resquetId" value="@(String.Concat("{{apim-name}}_", context.RequestId))" />
+        <set-variable name="clientId" value="@(context.Request.Headers.GetValueOrDefault("client_id"))" />
+        <set-variable name="accessToken" value="@(context.Request.Headers.GetValueOrDefault("access_token"))" />
+        <set-variable name="status" value="" />
+        <set-variable name="responseCode" value="" />
+        <set-variable name="responseReason" value="" />
+        <set-variable name="responseReasonData" value="" />
+        <set-variable name="responseBody" value="" />
+        <set-variable name="requestIpAddress" value="@{
+            string ipAddress = context.Request.IpAddress;
+            if (!String.IsNullOrEmpty(context.Request.Headers.GetValueOrDefault("x-forwarded-for",""))) {
+                string[] tokens = context.Request.Headers.GetValueOrDefault("x-forwarded-for","").Split(':'); 
+                if (tokens.Length == 2) {
+                    ipAddress = tokens[0];
+                }
+            }
+
+            string[] ipAddressTokens = ipAddress.Split(',');
+            if (ipAddressTokens.Length > 1) {
+                return ipAddressTokens[ipAddressTokens.Length-1];
+            }
+            return ipAddress;
+        }" />
+        <set-variable name="requestBody" value="@{
+            if (context.Request?.Body?.As<string>(true) != null) {
+                return context.Request.Body.As<string>(true);
+            }
+            return new JObject().ToString();
+        }" />
+        <!-- GET CLIENT/TOKEN -->
+        <choose>
+            <when condition="@(!String.IsNullOrEmpty((string)context.Variables["clientId"]) && !String.IsNullOrEmpty((string)context.Variables["accessToken"]))">
+                <cache-lookup-value key="@((string)context.Variables["clientId"])" variable-name="client" caching-type="internal" />
+                <set-variable name="cache" value="internal" />
+                <!-- CHECK IF VALUE EXIST -->
+                <choose>
+                    <!-- CHECK IF VALUE NOT EXIST ON INTERNAL CACHE -->
+                    <when condition="@(!(bool)context.Variables.ContainsKey("client"))">
+                        <cache-lookup-value key="@((string)context.Variables["clientId"])" variable-name="client" caching-type="external" />
+                        <set-variable name="cache" value="external" />
+                        <choose>
+                            <when condition="@(!(bool)context.Variables.ContainsKey("client"))">
+                                <cache-lookup-value key="@(String.Format("{0}_{1}", (string)context.Variables["clientId"], (string)context.Variables["accessToken"]))" variable-name="status" caching-type="external" />
+                                <choose>
+                                    <when condition="@((string)context.Variables["status"] != "INVALID")">
+                                        <!-- MAKE REQUEST TO GET TOKEN IN KEY VAULT  -->
+                                        <send-request mode="new" response-variable-name="payload" timeout="20" ignore-error="true">
+                                            <set-url>@("{{sync-url}}/api/v1/keyVault/"+(string)context.Variables["clientId"] + "/{{key-vault-name}}")</set-url>
+                                            <set-method>GET</set-method>
+                                            <set-header name="Authorization" exists-action="override">
+                                                <value>{{sync-authorization}}</value>
+                                            </set-header>
+                                            <set-header name="data_type" exists-action="append">
+                                                <value>apim</value>
+                                            </set-header>
+                                        </send-request>
+                                        <set-variable name="cache" value="no-cache" />
+                                        <!-- TRY PARSE RESPONSE PAYLOAD TO JSON -->
+                                        <set-variable name="client" value="@{
+                                            try { 
+                                                if (context.Variables["payload"] == null) {
+                                                    return null;    
+                                                }
+                                                JArray resoponse = (JArray)JToken.Parse(((IResponse)context.Variables["payload"]).Body.As<String>());
+                                                return resoponse[0].ToString();
+                                            } catch(JsonException e) {
+                                                return null;
+                                            }
+                                        }" />
+                                        <choose>
+                                            <!-- CHECK RESPONSE PAYLOAD  -->
+                                            <when condition="@(String.IsNullOrEmpty((string)context.Variables["client"]))">
+                                                <set-variable name="status" value="INVALID" />
+                                                <set-variable name="cache" value="no-cache" />
+                                                <cache-store-value key="@(String.Format("{0}_{1}", (string)context.Variables["clientId"], (string)context.Variables["accessToken"]))" value="INVALID" duration="{{duration-invalid}}" caching-type="external" />
+                                            </when>
+                                            <otherwise>
+                                                <!-- SEND REQUEST TO SYNCHRONIZED TOKEN -->
+                                                <send-one-way-request mode="new">
+                                                    <set-url>@("{{sync-url}}/api/v1/apim/sync/"+(string)context.Variables["clientId"])</set-url>
+                                                    <set-method>POST</set-method>
+                                                    <set-header name="Authorization" exists-action="override">
+                                                        <value>{{sync-authorization}}</value>
+                                                    </set-header>
+                                                </send-one-way-request>
+                                            </otherwise>
+                                        </choose>
+                                    </when>
+                                </choose>
+                            </when>
+                        </choose>
+                    </when>
+                </choose>
+            </when>
+        </choose>
+        <set-variable name="token" value="@{
+            if ((string)context.Variables["status"] == "INVALID" || String.IsNullOrEmpty((string)context.Variables["clientId"]) || String.IsNullOrEmpty((string)context.Variables["accessToken"]) || (!(bool)context.Variables.ContainsKey("client"))) {
+                return null;
+            }
+
+            JArray _tokens = (JArray)(JObject.Parse((string)context.Variables["client"]))["tokens"];
+            string _accessTokenHeader = (string)context.Variables["accessToken"];
+            foreach (var token in _tokens) {
+                if (token.ToString() ==  _accessTokenHeader) {
+                    return token.ToString();
+                }
+            }
+            return null;
+        }" />
+        <choose>
+            <when condition="@(String.IsNullOrEmpty((string)context.Variables["token"]))">
+                <!-- Return 401 Unauthorized with http-problem payload -->
+                <set-variable name="responseCode" value="401" />
+                <set-variable name="responseReason" value="Unauthorized" />
+                <set-variable name="responseReasonData" value="Invalid Token" />
+                <set-variable name="responseBody" value="client_id and/or access_token headers values are incorrect" />
+            </when>
+            <otherwise>
+                <set-variable name="mode" value="@{
+                    if (JObject.Parse((string)context.Variables["client"]).TryGetValue("ip-filter", out JToken IpFilter)) {                        
+                        if (!String.IsNullOrEmpty(IpFilter.ToString())) {
+                            return IpFilter["mode"].ToString().ToLower();
+                        }
+                    }
+                    return null;
+                }" />
+                <!-- Checking IP Filtering -->
+                <choose>
+                    <when condition="@(!String.IsNullOrEmpty((string)context.Variables["mode"]) && ((string)context.Variables["mode"]) == "allow")">
+                        <set-variable name="allow" value="@{
+                            if (JObject.Parse((string)context.Variables["client"]).TryGetValue("ip-filter", out JToken IpFilter)) {                                
+                                if(IpFilter["ips"].ToObject<string[]>().Contains((string)context.Variables["requestIpAddress"])) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }" />
+                        <choose>
+                            <when condition="@(!(bool)context.Variables["allow"])">
+                                <set-variable name="responseCode" value="403" />
+                                <set-variable name="responseReason" value="Forbidden" />
+                                <set-variable name="responseReasonData" value="IP Filtering - allow" />
+                                <set-variable name="responseBody" value="" />
+                            </when>
+                        </choose>
+                    </when>
+                    <when condition="@(!String.IsNullOrEmpty((string)context.Variables["mode"]) && ((string)context.Variables["mode"]) == "deny")">
+                        <set-variable name="deny" value="@{
+                            if(JObject.Parse((string)context.Variables["client"]).TryGetValue("ip-filter", out JToken IpFilter)) {
+                                if(IpFilter["ips"].ToObject<string[]>().Contains((string)context.Variables["requestIpAddress"])) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }" />
+                        <choose>
+                            <when condition="@((bool)context.Variables["deny"])">
+                                <set-variable name="responseCode" value="403" />
+                                <set-variable name="responseReason" value="Forbidden" />
+                                <set-variable name="responseReasonData" value="IP Filtering - deny" />
+                                <set-variable name="responseBody" value="" />
+                            </when>
+                        </choose>
+                    </when>
+                </choose>
+            </otherwise>
+        </choose>
+        <!-- FINAL -->
+        <choose>
+            <when condition="@(!String.IsNullOrEmpty((string)context.Variables["responseCode"]))">
+                <log-to-eventhub logger-id="logger-eventhub-gateway">@{
+                    var headers = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+                    foreach (var entry in context.Request.Headers) {
+                        var value = entry.Value != null ? String.Join(",", (string[])entry.Value) : null;
+                        headers.Add(entry.Key, value);
+                    }
+
+                    foreach (var key in new string[] { "client_id", "access_token" }) {
+                        if (headers.ContainsKey(key)) {
+                            headers[key] = Regex.Replace(headers[key], "^.{1,3}", "*");
+                            headers[key] = Regex.Replace(headers[key], ".{1,3}$", "*");
+                        }
+                    }
+
+                    var content = new Dictionary<string, object>() {
+                        {"errorGateway", false}, 
+                        {"apimRegion", context.Deployment.Region},
+                        {"apimName", context.Deployment.ServiceName},
+                        {"requestId", context.Variables.GetValueOrDefault<string>("resquetId")}, 
+                        {"requestOperationId", context.Operation.Id},
+                        {"requestOperationTemplate", context.Operation.UrlTemplate},
+                        {"requestMethod", context.Request.Method}, 
+                        {"requestHeaders", headers}, 
+                        {"requestMatchedParameters", context.Request.MatchedParameters}, 
+                        {"requestIpAddress", context.Variables.GetValueOrDefault<string>("requestIpAddress")},
+                        {"requestOriginalUrl", context.Request.OriginalUrl.ToString()}, 
+                        {"requestUrl", context.Request.Url.ToString()}, 
+                        {"requestAppName", context.Variables.GetValueOrDefault<string>("appName")}, 
+                        {"responseCode", int.Parse(context.Variables.GetValueOrDefault<string>("responseCode"))}, 
+                        {"responseReason", context.Variables.GetValueOrDefault<string>("responseReason")}, 
+                        {"responseReasonData", context.Variables.GetValueOrDefault<string>("responseReasonData")},
+                        {"responseTime", context.Elapsed.TotalMilliseconds},
+                        {"apimCache", context.Variables.GetValueOrDefault<string>("cache")}
+                    };
+
+                    if ("{{log-level}}" == "DEBUG") {
+                        content.Add("requestBody", context.Variables.GetValueOrDefault<string>("requestBody"));
+                    }
+                    return JsonConvert.SerializeObject(content);
+                }</log-to-eventhub>            
+                <return-response>
+                    <set-status code="@(int.Parse(context.Variables.GetValueOrDefault<string>("responseCode")))" reason="@(context.Variables.GetValueOrDefault<string>("responseReason"))" />
+                    <set-header name="Content-Type" exists-action="override">
+                        <value>application/json</value>
+                    </set-header>
+                    <set-body>@{
+                        var content = new Dictionary<string, object>() {
+                            {"statusCode", int.Parse(context.Variables.GetValueOrDefault<string>("responseCode"))}, 
+                            {"reason", context.Variables.GetValueOrDefault<string>("responseReason")}, 
+                            {"message", context.Variables.GetValueOrDefault<string>("responseBody")}
+                        };
+                        return JsonConvert.SerializeObject(content);
+                    }</set-body>
+                </return-response>
+            </when>
+            <otherwise>
+                <set-header name="X-Forwarded-Host" exists-action="override">
+                    <value>@(context.Request.OriginalUrl.ToUri().Host)</value>
+                </set-header>
+                <set-header name="uuid_request" exists-action="override">
+                    <value>@(context.Variables.GetValueOrDefault<string>("resquetId"))</value>
+                </set-header>
+                <set-variable name="appName" value="@((string)(JObject.Parse((string)context.Variables["client"]))["appName"])" />
+                <set-variable name="forwardTime" value="@(context.Elapsed.TotalMilliseconds)" />
+                <set-backend-service base-url="{{backend}}" />
+            </otherwise>
+        </choose>
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+        <log-to-eventhub logger-id="logger-eventhub-gateway">@{
+            var headers = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+            foreach (var entry in context.Request.Headers) {
+                var value = entry.Value != null ? String.Join(",", (string[])entry.Value) : null;
+                headers.Add(entry.Key, value);
+            }
+
+            foreach (var key in new string[] { "client_id", "access_token" }) {
+                if (headers.ContainsKey(key)) {
+                    headers[key] = Regex.Replace(headers[key], "^.{1,3}", "*");
+                    headers[key] = Regex.Replace(headers[key], ".{1,3}$", "*");
+                }
+            }
+
+            var content = new Dictionary<string, object>() {
+                {"errorGateway", false}, 
+                {"apimRegion", context.Deployment.Region},
+                {"apimName", context.Deployment.ServiceName},
+                {"requestId", context.Variables.GetValueOrDefault<string>("resquetId")}, 
+                {"requestOperationId", context.Operation.Id},
+                {"requestOperationTemplate", context.Operation.UrlTemplate},
+                {"requestMethod", context.Request.Method}, 
+                {"requestHeaders", headers}, 
+                {"requestMatchedParameters", context.Request.MatchedParameters},
+                {"requestIpAddress", context.Variables.GetValueOrDefault<string>("requestIpAddress")}, 
+                {"requestOriginalUrl", context.Request.OriginalUrl.ToString()}, 
+                {"requestUrl", context.Request.Url.ToString()}, 
+                {"requestAppName", context.Variables.GetValueOrDefault<string>("appName")}, 
+                {"responseCode", context.Response.StatusCode}, 
+                {"responseReason", context.Response.StatusReason}, 
+                {"responseTime", context.Elapsed.TotalMilliseconds},
+                {"forwardTime", context.Variables["forwardTime"]},
+                {"apimCache", context.Variables.GetValueOrDefault<string>("cache")}
+            };
+
+            if ("{{log-level}}" == "DEBUG") {
+                content.Add("requestBody", context.Variables.GetValueOrDefault<string>("requestBody"));
+                content.Add("responseBody", context.Response.Body.As<string>(preserveContent: true));
+            }
+            return JsonConvert.SerializeObject(content);
+        }</log-to-eventhub>
+    </outbound>
+    <on-error>
+        <log-to-eventhub logger-id="logger-eventhub-gateway">@{
+            var headers = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+            foreach (var entry in context.Request.Headers) {
+                var value = entry.Value != null ? String.Join(",", (string[])entry.Value) : null;
+                headers.Add(entry.Key, value);
+            }
+
+            foreach (var key in new string[] { "client_id", "access_token" }) {
+                if (headers.ContainsKey(key)) {
+                    headers[key] = Regex.Replace(headers[key], "^.{1,3}", "*");
+                    headers[key] = Regex.Replace(headers[key], ".{1,3}$", "*");
+                }
+            }
+
+            var content = new Dictionary<string, object>() {
+                {"errorGateway", true}, 
+                {"apimRegion", context.Deployment.Region},
+                {"apimName", context.Deployment.ServiceName},
+                {"requestId", context.Variables.GetValueOrDefault<string>("resquetId")}, 
+                {"requestMethod", context.Request.Method}, 
+                {"requestHeaders", headers}, 
+                {"requestMatchedParameters", context.Request.MatchedParameters}, 
+                {"requestIpAddress", context.Variables.GetValueOrDefault<string>("requestIpAddress")},
+                {"requestOriginalUrl", context.Request.OriginalUrl.ToString()}, 
+                {"requestUrl", context.Request.Url.ToString()}, 
+                {"requestAppName", context.Variables.GetValueOrDefault<string>("appName")}, 
+                {"responseTime", context.Elapsed.TotalMilliseconds},
+                {"apimCache", context.Variables.GetValueOrDefault<string>("cache")}
+            };
+
+            if (context.LastError != null) {
+                content.Add("errorReason", context.LastError.Reason);
+                content.Add("errorMessage", context.LastError.Message);
+            }
+
+            if (context.Operation != null) {
+                content.Add("requestOperationId", context.Operation.Id);
+                content.Add("requestOperationTemplate", context.Operation.UrlTemplate);
+            }
+
+            if (context.Response != null) {
+                content.Add("responseCode", context.Response.StatusCode);
+                content.Add("responseReason", context.Response.StatusReason);
+            }            
+
+            if ("{{log-level}}" == "DEBUG") {
+                content.Add("requestBody", context.Variables.GetValueOrDefault<string>("requestBody"));
+            }
+            return JsonConvert.SerializeObject(content);
+        }</log-to-eventhub>
+        <base />
+    </on-error>
+</policies>

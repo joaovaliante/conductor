@@ -1,0 +1,48 @@
+replicas: 1
+
+imagePullSecret: conductorcr
+image: mongo
+version: 3.6
+
+livenessProbe:
+  httpGet:
+    path: /monitor/health
+    port: 27017
+
+readinessProbe:
+  httpGet:
+    path: /monitor/health
+    port: 27017
+
+enviroments:
+  values: 
+    MONGO_INITDB_ROOT_PASSWORD: admin
+    MONGO_INITDB_ROOT_USERNAME: admin
+
+    
+  secrets: {}
+
+service:
+    type: LoadBalancer
+    loadBalancerIP: 
+    port: 27017
+    name: 27017tcp
+    targetPort: 27017
+    
+namespace:
+  # Create namespace
+  create: false
+
+registry:
+  servers:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: ${registry_password}
+
+storage:
+  #Create PVC
+  create: true
+  size: 15Gi
+  className: standard
+  accessMode: ReadWriteOnce

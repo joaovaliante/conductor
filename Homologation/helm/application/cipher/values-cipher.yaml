@@ -1,0 +1,27 @@
+image: ${image}
+version: ${version}
+enviroments:
+  values: 
+    INFO_APP_NAME: ${info_app_name}
+    SPRING_REDIS_PORT: 6379
+    SPRING_REDIS_HOST: cipher.redis
+    SPRING_PROFILES_ACTIVE: ${spring_profiles_active}
+    SPRING_DATASOURCE_URL: ${spring_datasource_url}
+    SPRING_DATASOURCE_DATABASENAME: ${spring_datasource_databasename}
+    SPRING_DATASOURCE_SERVERNAME: ${spring_datasource_servername}/
+    SPRING_DATASOURCE_USERNAME: ${spring_datasource_username}  
+  secrets:
+    SPRING_DATASOURCE_PASSWORD : ${spring_datasource_password}
+
+redis:
+  enabled: true 
+  name: redis
+
+  namespace:
+    create: false
+
+registry:
+  - name: desenvolvimento-cipher
+    server: desenvolvimento.azurecr.io
+    username: desenvolvimento
+    password: ${registry_password}

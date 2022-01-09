@@ -1,0 +1,7 @@
+replicas: 1
+image: desenvolvimento.azurecr.io/tokenization-mastercard
+version: 42573
+
+autoScale:
+  enabled: true
+

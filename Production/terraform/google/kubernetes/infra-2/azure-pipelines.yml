@@ -1,0 +1,23 @@
+trigger: none
+
+variables:
+  - group: production-azure
+  - group: google
+  - group: kubernetes-base
+  - group: production-kubernetes
+  - group: production-infra-2
+
+stages:
+  - template: ../../../../templates/terraform.yaml
+    parameters:
+      directory: ./terraform/$(CLOUD)/kubernetes/infra-2
+      jobEnvironment: "Production"
+      environment: "prd"
+      stateName: "Infrastructure"
+
+  - template: ../../../../templates/terraform.yaml
+    parameters:
+      directory: ./terraform/application/infra-2
+      jobEnvironment: "Production"
+      environment: "prd"
+      stateName: "Application"      

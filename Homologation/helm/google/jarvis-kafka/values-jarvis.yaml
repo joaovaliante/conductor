@@ -1,0 +1,17 @@
+api:
+  service:
+    annotations: 
+      cloud.google.com/load-balancer-type: Internal
+      networking.gke.io/internal-load-balancer-allow-global-access: "true"  
+      
+authorize:
+  service:
+    annotations: 
+      cloud.google.com/load-balancer-type: Internal
+      networking.gke.io/internal-load-balancer-allow-global-access: "true"  
+
+management:
+  service:
+    annotations: 
+      cloud.google.com/load-balancer-type: Internal
+      networking.gke.io/internal-load-balancer-allow-global-access: "true"  

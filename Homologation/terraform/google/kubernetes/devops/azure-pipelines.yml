@@ -1,0 +1,54 @@
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      ref: refs/heads/master
+      name: Conductor IaC/Azure Pipeline
+
+trigger: none
+
+variables:
+  - group: kubernetes-base
+  - group: homologation-kubernetes
+  - group: google
+  - group: hmlg-devops
+  - group: homologation-harness
+  - group: kafka-splunk-homologation
+
+stages:
+  - template: terraform/pipeline.yaml@templates
+    parameters:
+      directory: ./terraform/$(CLOUD)/kubernetes/$(PROJECT_NAME)
+      jobEnvironment: "$(JOB_ENVIRONMENT)"
+      environment: "$(ENVIRONMENT)"
+      stateName: "Infrastructure"
+
+  - template: terraform/pipeline.yaml@templates
+    parameters:
+      directory: ./terraform/application/$(PROJECT_NAME)
+      jobEnvironment: "$(JOB_ENVIRONMENT)"
+      environment: "$(ENVIRONMENT)"
+      stateName: "Application"   
+
+      beforeExecute: |
+        CERT_KEY_PATH="$(certificate_key.secureFilePath)"
+        CERT_PEM_PATH="$(certificate_pem.secureFilePath)"
+        CERT_KEY_VALUE=$(cat $CERT_KEY_PATH | base64)
+        CERT_PEM_VALUE=$(cat $CERT_PEM_PATH | base64)   
+
+      arguments: 
+        - '-var=rancher_tls_cert="${CERT_PEM_VALUE}"'
+        - '-var=rancher_tls_key="${CERT_KEY_VALUE}"'            
+
+      preSteps:
+        - task: DownloadSecureFile@1
+          name: certificate_key
+          displayName: 'Download Certificate Key'
+          inputs:
+            secureFile: 'devcdt.key'
+
+        - task: DownloadSecureFile@1
+          name: certificate_pem
+          displayName: 'Download Certificate'
+          inputs:
+            secureFile: 'devcdt.pem'               

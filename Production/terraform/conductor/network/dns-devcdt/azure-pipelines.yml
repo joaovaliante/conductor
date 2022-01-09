@@ -1,0 +1,26 @@
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      ref: refs/heads/master
+      name: Conductor IaC/Azure Pipeline
+
+variables:
+  - group: production-azure
+
+trigger:
+  branches:
+    include:
+      - master
+
+  paths:
+    include:
+      - terraform/conductor/network/dns-devcdt
+
+stages:    
+  - template: terraform/pipeline.yaml@templates    
+    parameters:
+      directory: ./terraform/conductor/network/dns-devcdt
+      jobEnvironment: "Production Cloud"
+      environment: "csp"
+      stateName: "Infrastructure"

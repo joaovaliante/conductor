@@ -1,0 +1,10 @@
+
+replicas: 0
+image: conductorcr.azurecr.io/tokenization-public
+version: 34867
+
+autoScale:
+  enabled: false
+
+
+

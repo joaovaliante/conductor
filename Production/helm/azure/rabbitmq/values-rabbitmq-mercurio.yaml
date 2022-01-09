@@ -1,0 +1,721 @@
+version: 3.8.2-alpine
+
+service:
+  annotations: 
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+  type: LoadBalancer
+
+monitor: 
+  prometheusRule:
+    default: 
+      additionalRuleLabels: 
+        cloud: azure
+        cluster: ${cluster_name}  
+
+definitions: |
+  {
+    "rabbit_version": "3.8.16",
+    "rabbitmq_version": "3.8.16",
+    "product_name": "RabbitMQ",
+    "product_version": "3.8.16",
+    "users": [
+      {
+        "name": "rabbit_qui",
+        "password_hash": "Ta+BcdZ3R0Ja0jjhAPqfzpybIMUOSQYv3Z2OBFHhtK8TUzgJ",
+        "hashing_algorithm": "rabbit_password_hashing_sha256",
+        "tags": "",
+        "limits": {}
+      },
+      {
+        "name": "rabbit_controly",
+        "password_hash": "myBswDH2+/b87bZSAYXbUYx9deeEydcpCKvjI4R5caTiCozs",
+        "hashing_algorithm": "rabbit_password_hashing_sha256",
+        "tags": "",
+        "limits": {}
+      },
+      {
+        "name": "noc",
+        "password_hash": "2ecUtr58RJrzU+83pwkjcX2lMsM/ed/zzz+jhAqemAXsn1cP",
+        "hashing_algorithm": "rabbit_password_hashing_sha256",
+        "tags": "monitoring",
+        "limits": {}
+      },
+      {
+        "name": "noc_desenv",
+        "password_hash": "iHogfSKI3EESoZv3j2KQZIzQzMGxT+9OIj6VnZF11sxLypns",
+        "hashing_algorithm": "rabbit_password_hashing_sha256",
+        "tags": "monitoring",
+        "limits": {}
+      },
+      {
+        "name": "pgomes",
+        "password_hash": "N/C1AtV4o3AXEjwmK7spa7/q6AblGKFgoyj47+lAVZbfX+fg",
+        "hashing_algorithm": "rabbit_password_hashing_sha256",
+        "tags": "",
+        "limits": {}
+      },
+      {
+        "name": "rabbit_mercurio",
+        "password_hash": "lR2x0yAAFhBt7ZuFQldarAEq/yQqk9ul5sNZVjGEjL/2aoe/",
+        "hashing_algorithm": "rabbit_password_hashing_sha256",
+        "tags": "",
+        "limits": {}
+      },
+      {
+        "name": "rabbit_sgr",
+        "password_hash": "2cmoI2/Isfsih5449aRWVbmqQn14Z59ga1nDRPRoCKNeUzSR",
+        "hashing_algorithm": "rabbit_password_hashing_sha256",
+        "tags": "policymaker",
+        "limits": {}
+      },
+      {
+        "name": "rabbit_splunk",
+        "password_hash": "Wb6CeFsoVDKZI6ZAL3Ivh+Afx6XaU19Q0+4luXRivadgQC5Z",
+        "hashing_algorithm": "rabbit_password_hashing_sha256",
+        "tags": "monitoring",
+        "limits": {}
+      },
+      {
+        "name": "rabbit_conductor",
+        "password_hash": "bbYdnxT7H08b/V3cAVw3KHxm67my7k3nrO9hyHTNygTuKS9k",
+        "hashing_algorithm": "rabbit_password_hashing_sha256",
+        "tags": "",
+        "limits": {}
+      },
+      {
+        "name": "guest",
+        "password_hash": "MM+C8Y/Ge6g0m+JwUV3omlX331ELmoGvpMIXboOwPAhKdlr4",
+        "hashing_algorithm": "rabbit_password_hashing_sha256",
+        "tags": "",
+        "limits": {}
+      },
+      {
+        "name": "autcronos",
+        "password_hash": "ajTq8t0djoADfHCk4T1n5GB9efe/L57fHd4aeQ43NqhTh80M",
+        "hashing_algorithm": "rabbit_password_hashing_sha256",
+        "tags": "administrator",
+        "limits": {}
+      },
+      {
+        "name": "desenv",
+        "password_hash": "lOqmIGP4du6sNaJ8IPpLS0sapFz0c9BUwn2EvF6qGvyvouv/",
+        "hashing_algorithm": "rabbit_password_hashing_sha256",
+        "tags": "monitoring",
+        "limits": {}
+      },
+      {
+        "name": "rabbitmq-admin",
+        "password_hash": "08fjwEkwJjehAArh/qoUELA4mjTzZqaRzkNkjvmZld4MbEZx",
+        "hashing_algorithm": "rabbit_password_hashing_sha256",
+        "tags": "administrator",
+        "limits": {}
+      },
+      {
+        "name": "rabbit_pagseguro",
+        "password_hash": "Enx45E3vSYeHBRBA0N3efuQmHxDxaxvU2g1fyXJC8ekcwGXH",
+        "hashing_algorithm": "rabbit_password_hashing_sha256",
+        "tags": "",
+        "limits": {}
+      }
+    ],
+    "vhosts": [
+      {
+        "name": "Qui"
+      },
+      {
+        "name": "Controly"
+      },
+      {
+        "name": "/"
+      },
+      {
+        "name": "cronoshost"
+      },
+      {
+        "name": "Pagseguro"
+      },
+      {
+        "name": "SGR"
+      }
+    ],
+    "permissions": [
+      {
+        "user": "rabbit_conductor",
+        "vhost": "Controly",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "rabbit_pagseguro",
+        "vhost": "Pagseguro",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "rabbit_splunk",
+        "vhost": "cronoshost",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "rabbitmq-admin",
+        "vhost": "Controly",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "autcronos",
+        "vhost": "cronoshost",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "guest",
+        "vhost": "cronoshost",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "guest",
+        "vhost": "Pagseguro",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "rabbit_sgr",
+        "vhost": "SGR",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "desenv",
+        "vhost": "Controly",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "guest",
+        "vhost": "/",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "rabbit_conductor",
+        "vhost": "Pagseguro",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "guest",
+        "vhost": "Qui",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "noc",
+        "vhost": "SGR",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "rabbit_conductor",
+        "vhost": "Qui",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "rabbit_splunk",
+        "vhost": "Pagseguro",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "rabbitmq-admin",
+        "vhost": "Qui",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "guest",
+        "vhost": "Controly",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "rabbit_splunk",
+        "vhost": "SGR",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "rabbit_splunk",
+        "vhost": "Controly",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "pgomes",
+        "vhost": "/",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "noc",
+        "vhost": "Controly",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "desenv",
+        "vhost": "Qui",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "noc_desenv",
+        "vhost": "Qui",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "desenv",
+        "vhost": "Pagseguro",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "noc_desenv",
+        "vhost": "Pagseguro",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "rabbitmq-admin",
+        "vhost": "SGR",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "rabbit_qui",
+        "vhost": "Qui",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "rabbitmq-admin",
+        "vhost": "/",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "rabbit_splunk",
+        "vhost": "Qui",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "rabbitmq-admin",
+        "vhost": "Pagseguro",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "guest",
+        "vhost": "SGR",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "rabbit_controly",
+        "vhost": "Controly",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "noc_desenv",
+        "vhost": "Controly",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "rabbit_mercurio",
+        "vhost": "Controly",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "noc",
+        "vhost": "/",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      }
+    ],
+    "topic_permissions": [
+      {
+        "user": "rabbitmq-admin",
+        "vhost": "/",
+        "exchange": "",
+        "write": ".*",
+        "read": ".*"
+      }
+    ],
+    "parameters": [],
+    "global_parameters": [
+      {
+        "name": "cluster_name",
+        "value": "rabbit@rabbitmq-0.rabbitmq-headless.rabbitmq.svc.cluster.local"
+      },
+      {
+        "name": "internal_cluster_id",
+        "value": "rabbitmq-cluster-id-Y74ucPnyMqd30-CijkzKrQ"
+      }
+    ],
+    "policies": [
+      {
+        "vhost": "Pagseguro",
+        "name": "ha-all",
+        "pattern": "",
+        "apply-to": "all",
+        "definition": {
+          "ha-mode": "all",
+          "ha-sync-mode": "automatic"
+        },
+        "priority": 0
+      },
+      {
+        "vhost": "Controly",
+        "name": "ha-all",
+        "pattern": "",
+        "apply-to": "all",
+        "definition": {
+          "ha-mode": "all",
+          "ha-sync-mode": "automatic"
+        },
+        "priority": 0
+      },
+      {
+        "vhost": "Qui",
+        "name": "ha-all",
+        "pattern": "",
+        "apply-to": "all",
+        "definition": {
+          "ha-mode": "all",
+          "ha-sync-mode": "automatic"
+        },
+        "priority": 0
+      },
+      {
+        "vhost": "/",
+        "name": "ha-all",
+        "pattern": "",
+        "apply-to": "all",
+        "definition": {
+          "ha-mode": "all",
+          "ha-sync-mode": "automatic"
+        },
+        "priority": 0
+      },
+      {
+        "vhost": "SGR",
+        "name": "ha-all",
+        "pattern": "",
+        "apply-to": "all",
+        "definition": {
+          "ha-mode": "all",
+          "ha-sync-mode": "automatic"
+        },
+        "priority": 0
+      }
+    ],
+    "queues": [
+      {
+        "name": "TransacaoDesfazimentoOnlineQueueConductorToEmissor",
+        "vhost": "Qui",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "StatusCartaoOnlineQueueConductorToEmissor",
+        "vhost": "Qui",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "TransacaoOffilineQueueConductorToEmissor",
+        "vhost": "Qui",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "TransacaoCancelamentoOnlineQueueConductorToEmissor",
+        "vhost": "Qui",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "TransacaoOnlineQueueConductorToEmissor",
+        "vhost": "Qui",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "AjustesInternoQueueConductorToEmissor",
+        "vhost": "Qui",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "TransacoesBatchConductorToEmissor",
+        "vhost": "Qui",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "AjusteOnlineQueueEmissorToConductor",
+        "vhost": "Qui",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "TransacaoOnlineQueueConductorToEmissor",
+        "vhost": "Controly",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "AjusteOnlineQueueEmissorToConductor",
+        "vhost": "Controly",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "aliveness-test",
+        "vhost": "Controly",
+        "durable": false,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "StatusCartaoOnlineQueueConductorToEmissor",
+        "vhost": "Controly",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "AjustesInternoQueueConductorToEmissor",
+        "vhost": "Controly",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "TokenActivationCodeQueueConductorToEmissor",
+        "vhost": "Controly",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "TransacaoCancelamentoOnlineQueueConductorToEmissor",
+        "vhost": "Controly",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "EstornoBIIOffilineQueueConductorToEmissor",
+        "vhost": "Controly",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "TransacoesBatchConductorToEmissor",
+        "vhost": "Controly",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "TransacaoOffilineQueueConductorToEmissor",
+        "vhost": "Controly",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "TransacaoDesfazimentoOnlineQueueConductorToEmissor",
+        "vhost": "Controly",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "TransacaoPagamentoQueueConductorToEmissor",
+        "vhost": "Controly",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "Leonardo Feliciano Lopes",
+        "vhost": "/",
+        "durable": true,
+        "auto_delete": true,
+        "arguments": {}
+      },
+      {
+        "name": "cronos.fila.transacao",
+        "vhost": "cronoshost",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "TransacaoOffilineQueueConductorToEmissor",
+        "vhost": "Pagseguro",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "AjustesInternoQueueConductorToEmissor",
+        "vhost": "Pagseguro",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "TransacaoCancelamentoOnlineQueueConductorToEmissor",
+        "vhost": "Pagseguro",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "EstornoBIIOffilineQueueConductorToEmissor",
+        "vhost": "Pagseguro",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "TransacaoPagamentoQueueConductorToEmissor",
+        "vhost": "Pagseguro",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "TransacaoOnlineQueueConductorToEmissor",
+        "vhost": "Pagseguro",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "TransacoesBatchConductorToEmissor",
+        "vhost": "Pagseguro",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "TransacaoDesfazimentoOnlineQueueConductorToEmissor",
+        "vhost": "Pagseguro",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "pier.QUEUE_GERAR_CARTAO_GRAFICA",
+        "vhost": "SGR",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "pier.QUEUE_PAGAMENTOS_REALIZADOS",
+        "vhost": "SGR",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      }
+    ],
+    "exchanges": [
+      {
+        "name": "QUI",
+        "vhost": "Qui",
+        "type": "direct",
+        "durable": true,
+        "auto_delete": true,
+        "internal": false,
+        "arguments": {}
+      },
+      {
+        "name": "pier.EXCHANGE_DELAY",
+        "vhost": "SGR",
+        "type": "topic",
+        "durable": true,
+        "auto_delete": false,
+        "internal": false,
+        "arguments": {}
+      }
+    ],
+    "bindings": [
+      {
+        "source": "pier.EXCHANGE_DELAY",
+        "vhost": "SGR",
+        "destination": "pier.QUEUE_PAGAMENTOS_REALIZADOS",
+        "destination_type": "queue",
+        "routing_key": "pier.messages.pagamentos-realizados",
+        "arguments": {}
+      }
+    ]
+  }

@@ -1,0 +1,35 @@
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      ref: refs/heads/master
+      name: Conductor IaC/Azure Pipeline
+
+trigger: none
+
+variables:
+  # Common:
+  - group: kubernetes-base
+  - group: non-prod-azure
+  - group: non-prod-rancher
+
+  # Specific:  
+  - group: homologation-pierflex-general
+  - group: harness
+
+stages:
+  - template: terraform/pipeline.yaml@templates
+    parameters:
+      directory: ./terraform/azure/$(PROJECT_NAME)
+      jobEnvironment: "$(JOB_ENVIRONMENT)"
+      environment: "$(ENVIRONMENT)"
+      stateName: "Infrastructure"
+      azureSubscription: "Conductor HMLG IaC"
+
+  - template: terraform/pipeline.yaml@templates
+    parameters:
+      directory: ./terraform/application/$(PROJECT_NAME)
+      jobEnvironment: "$(JOB_ENVIRONMENT)"
+      environment: "$(ENVIRONMENT)"
+      stateName: "Application"
+      azureSubscription: "Conductor HMLG IaC"

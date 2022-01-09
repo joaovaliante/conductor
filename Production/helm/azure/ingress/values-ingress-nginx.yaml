@@ -1,0 +1,9 @@
+controller:
+  service:
+    annotations:
+      service.beta.kubernetes.io/azure-load-balancer-resource-group: #{RESOURCE_GROUP}#
+
+    internal:
+      annotations:
+        service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+        service.beta.kubernetes.io/azure-load-balancer-resource-group: #{RESOURCE_GROUP}#      

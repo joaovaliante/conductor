@@ -1,0 +1,20 @@
+trigger: none
+
+variables:
+  - group: kubernetes-base
+  - group: production-azure
+  - group: production-kubernetes
+  - group: production-pier
+  - group: csp-global-1
+  - group: production-mercurio
+  - group: production-mercurio-agillitas
+  - group: production-mercurio-c6bank
+  - group: production-mercurio-cbss
+  - group: production-mercurio-fortbrasil
+  - group: production-mercurio-pernambucanas
+  - group: production-mercurio-unicred
+  - group: production-mercurio-xpi
+  - group: production-visa-direct
+
+extends:
+  template: ../../../../templates/app-pipeline.yaml

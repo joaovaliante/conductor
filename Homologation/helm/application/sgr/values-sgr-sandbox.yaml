@@ -1,0 +1,67 @@
+core:
+  replicas: 1
+  image: conductorcr.azurecr.io/sgr-hmlg/sgr-core
+  version: ${version}
+
+  enviroments:
+    # non sensitive variables
+    values: 
+      SGR_TIMEZONE: America/Recife
+      
+  service:
+    type: LoadBalancer
+    port: 8085
+    
+    labels: {} 
+    annotations: {}
+
+merge:
+  replicas: 1
+  image: conductorcr.azurecr.io/sgr-hmlg/sgr-core
+  version: ${version}
+   
+  enviroments:
+    # non sensitive variables
+    values: 
+      SGR_TIMEZONE: America/Recife
+
+worker:
+  replicas: 1
+  image: conductorcr.azurecr.io/sgr-hmlg/sgr-core
+  version: ${version}
+
+  enviroments:
+    # non sensitive variables
+    values: 
+      SGR_TIMEZONE: America/Recife
+      
+registry:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: #{REGISTRY_PASSWORD}#
+
+storage:
+  # Create PVC
+  create: true
+  size: 30Gi
+  className: azurefile
+
+redis:
+  enabled: false
+  name: redis
+  namespace:
+    create: false
+            
+rabbitmq:
+  enabled: false
+  name: rabbitmq
+  replicas: 3
+  namespace:
+    create: false
+
+activemq:
+  enabled: true
+  name: activemq
+  namespace:
+    create: false

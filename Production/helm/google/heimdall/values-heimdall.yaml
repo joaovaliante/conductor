@@ -1,0 +1,17 @@
+api:
+  service:
+    annotations: 
+      cloud.google.com/load-balancer-type: Internal
+      networking.gke.io/internal-load-balancer-allow-global-access: "true"    
+
+frontend:
+  service:
+    annotations:
+      cloud.google.com/load-balancer-type: Internal
+      networking.gke.io/internal-load-balancer-allow-global-access: "true"        
+
+rabbitmq:
+  service:
+    annotations:
+      cloud.google.com/load-balancer-type: Internal
+      networking.gke.io/internal-load-balancer-allow-global-access: "true"

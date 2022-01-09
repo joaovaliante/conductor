@@ -1,0 +1,16 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: apim-splunk-gateway-${apim_type}
+  labels:
+    strimzi.io/cluster: apim-splunk-${apim_type}
+spec:
+  class: com.splunk.kafka.connect.SplunkSinkConnector
+  tasksMax: ${max_task}
+  config:
+    topics: ${topic_gateway}
+    splunk.hec.uri: ${splunk_uri}
+    splunk.hec.ssl.validate.certs: "false"
+    splunk.hec.token: ${splunk_token}
+    splunk.sources: ${splunk_source}
+    splunk.sourcetypes: ${splunk_sourcetype_gateway}

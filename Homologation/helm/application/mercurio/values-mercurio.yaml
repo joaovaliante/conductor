@@ -1,0 +1,26 @@
+push: 
+  # Number of replicas to mercurio
+  replicas: 0
+  enviroments:       
+    values: 
+      PIER_URL: http://pier.pier:8081/v2
+      
+sms: 
+  # Number of replicas to mercurio
+  replicas: 0
+  enviroments:       
+    values: 
+      PIER_URL: http://pier.pier:8081/v2
+
+redis:
+  enabled: true
+  name: redis
+
+  namespace:
+    create: false
+
+registry:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: ${registry_password}

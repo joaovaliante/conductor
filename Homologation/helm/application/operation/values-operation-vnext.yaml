@@ -1,0 +1,43 @@
+image:  desenvolvimento.azurecr.io/prepaid/operation
+version: ${version}
+enviroments:
+  values: 
+    APP_PROFILE: hmlg
+    CACHE_ENABLED: true
+    CACHE_ENTITIES_TENANT: #{OPERATION_VNEXT_HMLE_CACHE_ENTITIES_TENANT}#
+    DATABASE_CONNECTIONURI: #{OPERATION_VNEXT_HMLE_DATABASE_CONNECTIONURI}#
+    DATABASE_MIGRATIONPRINCIPAL_MAXIMUMPOOLSIZE: 2
+    DATABASE_MIGRATIONPRINCIPAL_MINIMUMIDLE: 1
+    DATABASE_SHOWSQL: false
+    DATABASE_TIMEZONE: UTC
+    LOG_LEVEL: info
+    SPLUNK_ENABLED: true
+    SPLUNK_SKIPTLS: true
+    SPLUNK_SOURCE: #{OPERATION_VNEXT_HMLE_SPLUNK_SOURCE}#
+    SPLUNK_URL: #{OPERATION_VNEXT_HMLE_SPLUNK_URL}#
+    SWAGGER_IP: #{OPERATION_VNEXT_HMLE_SWAGGER_IP}#
+    SWAGGER_PORT: 80
+
+  secrets:
+    DATABASE_PASSWORD: #{OPERATION_VNEXT_HMLE_DATABASE_PASSWORD}#
+    DATABASE_USER: #{OPERATION_VNEXT_HMLE_DATABASE_USER}#
+    SPLUNK_TOKEN: #{OPERATION_VNEXT_HMLE_SPLUNK_TOKEN}#
+
+resources:
+  limits:
+    cpu: 4
+    memory: 512Mi
+  requests: 
+    cpu: 100m
+    memory: 256Mi
+
+registry:
+  servers:
+    - name: desenvolvimento
+      server: desenvolvimento.azurecr.io
+      username: desenvolvimento
+      password: #{VNEXT_HMLE_REGISTRY_PASSWORD}#
+
+
+istio:
+  enabled: true 

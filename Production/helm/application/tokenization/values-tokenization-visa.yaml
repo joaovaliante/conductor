@@ -1,0 +1,8 @@
+
+replicas: 0
+image: conductorcr.azurecr.io/tokenization-visa
+version: 34868
+
+autoScale:
+  enabled: false
+

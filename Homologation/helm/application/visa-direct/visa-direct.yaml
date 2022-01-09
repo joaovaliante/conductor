@@ -1,0 +1,49 @@
+image: conductorcr.azurecr.io/visa-direct-hmlg/visa-direct
+
+registry:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: ${registry_password}
+    
+service:
+  type: LoadBalancer
+  annotations:
+    cloud.google.com/load-balancer-type: Internal
+    networking.gke.io/internal-load-balancer-allow-global-access: "true" 
+
+enviroments:
+  values: 
+    SPLUNK_ENABLED: false
+    VISADIRECT_BASEURL: "https://api.visa.com/"
+    VISADIRECT_PROJECTCERTPATH: "./resources/cert.pem"
+    VISADIRECT_PROJECTPRIVATEKEYPATH: "./resources/key.pem"
+    VISADIRECT_PROJECTCABUNDLEPATH: "./resources/ca-bundle.pem"
+    VISADIRECT_MLEPRIVATEKEYPATH: "./resources/mle_private_key.pem"
+    VISADIRECT_MLECERTPATH: "/resource/server_cert.pem"
+  secrets:
+    VISADIRECT_USERNAME: ${visadirect_username}
+    VISADIRECT_PASSWORD: ${visadirect_password}
+    VISADIRECT_MLEIDKEY: ${visadirect_mleidkey}
+
+
+readinessProbe:
+  httpGet:
+    path: /v1/health/readiness
+    port: http
+
+startupProbe:
+  httpGet:
+    path: /v1/health/liveness
+    port: http
+  initialDelaySeconds: 60
+  failureThreshold: 20
+  periodSeconds: 10            
+
+livenessProbe:
+  httpGet:
+    path: /v1/health/liveness
+    port: http
+  initialDelaySeconds: 60
+  failureThreshold: 30
+  periodSeconds: 10

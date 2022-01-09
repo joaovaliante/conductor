@@ -1,0 +1,27 @@
+replicas: 1
+imagePullSecret: conductorcr
+image: conductorcr.azurecr.io/loki-hmlg/loki-api
+version: 1.6.0
+
+service:
+    type: LoadBalancer
+  
+registry:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: ${registry_password}
+
+enviroments:
+  # non sensitive variables
+  values:
+    DATASOURCE_DATABASENAME: PIER_HMLG_V2
+    DATASOURCE_SERVERNAME: 10.75.30.35
+    REDIS_HOST: redis.redis-default
+    SPRING_PROFILES_ACTIVE: hmlg
+    SPRING_REDIS: redis.redis-default
+  # sensitive variables
+  secrets:
+    DATASOURCE_USERNAME: #{DATASOURCE_USERNAME}#
+    DATASOURCE_PASSWORD: #{DATASOURCE_PASSWORD}#
+

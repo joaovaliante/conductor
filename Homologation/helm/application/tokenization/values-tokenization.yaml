@@ -1,0 +1,40 @@
+service:
+  type: LoadBalancer
+  
+enviroments:
+  values:
+    AZURE_FUNCTIONS_ENVIRONMENT: Development
+    CosmoDBEndpoint: #{TOKENIZATION_VNEXT_HMLE_COSMO_DB_ENDPOINT}#
+    MdesEnviroment: "7"
+    PathIssuerService: #{TOKENIZATION_VNEXT_HMLE_PATH_ISSUER_SERVICE}#
+    PathNeo: #{TOKENIZATION_VNEXT_HMLE_PATH_NEO}#
+    PathPier: #{TOKENIZATION_VNEXT_HMLE_PATH_PIER}#
+    PathSplunk: #{TOKENIZATION_VNEXT_HMLE_PATH_SPLUNK}#
+  secrets:
+    AzureServicesAuthConnectionString: #{TOKENIZATION_VNEXT_HMLE_AZURE_SERVICES_AUTH_CONNECTION_STRING}#
+    AzureWebJobsStorage: #{TOKENIZATION_VNEXT_HMLE_AZURE_WEB_JOBS_STORAGE}#
+    CDTCertificateKeyVaultSecretIdentifier: #{TOKENIZATION_VNEXT_HMLE_CDT_CERTIFICATE_KEY_VAULT_SECRET_IDENTIFIER}#
+    CosmoDBKey: #{TOKENIZATION_VNEXT_HMLE_COSMO_DB_KEY}#
+    CosmosDBConnectionString: #{TOKENIZATION_VNEXT_HMLE_COSMOS_DB_CONNECTION_STRING}#
+    ServiceBusConnectionString: #{TOKENIZATION_VNEXT_HMLE_SERVICE_BUS_CONNECTION_STRING}#
+    TokenSplunk: #{TOKENIZATION_VNEXT_HMLE_TOKEN_SPLUNK}#
+
+resources:
+  limits:
+    cpu: 700m
+    memory: 2Gi
+  requests:
+    cpu: 200m
+    memory: 400Mi
+
+autoScale:
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 75
+

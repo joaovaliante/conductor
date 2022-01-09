@@ -1,0 +1,125 @@
+replicas: 2
+version: latest
+
+autoScale:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 30
+
+resources:
+  limits:
+    cpu: 2
+    memory: 350Mi
+  requests:
+    cpu: 1
+    memory: 150Mi
+
+registry:
+  servers:
+    - name: conductorcr
+      server: conductorcr.azurecr.io
+      username: conductorcr
+      password: ${registry_password}
+
+service:
+  type: LoadBalancer
+
+config:
+  app:
+    name: Mímir
+    version: 0.2.0
+    description: Data synchronizer for Conductor API gateways
+
+  server:
+    port: 8080
+    prefix: /api/v1
+    cors:
+      headers:
+        - X-Requested-With 
+        - Content-Type 
+        - Authorization
+      methods: 
+        - GET
+        - POST
+        - PUT
+        - DELETE
+      origins: 
+        - https://gateway-apim-1.conductor.com.br
+        - https://gateway-apim-2.conductor.com.br
+
+  checkPoint:
+    default: keyVault
+    keyVault:
+      url: https://az1p-gateway-data.vault.azure.net
+
+  dataSource:
+    default: sensedia
+    services:
+      sensedia:
+        type: sensedia
+        config:
+          url: https://manager-conductor-pci.sensedia.com
+          endpoints:
+            app: /api-manager/api/v3/apps?apiIds=15&details=true
+            token: /api-manager/api/v3/access-tokens?status=ACTIVE&details=true
+            plan: /api-manager/api/v3/plans?apiIds=15&details=true
+          page:
+            size: 1000
+      keyvault-apim-1:
+        type: keyVault
+        config:
+          url: https://az1p-gateway-data.vault.azure.net
+          cache: redis
+      keyvault-apim-2:
+        type: keyVault
+        config:
+          url: https://az3p-gateway-data.vault.azure.net
+          cache: redis
+
+  services:
+    apim-1: 
+      type: apim
+      config:
+        url: https://gateway-apim-1.conductor.com.br
+        apiSuffix: /apim/cache
+    keyvault-apim-1:
+      type: keyVault
+      config:
+        dataSource: keyvault-apim-1
+    apim-2:
+      type: apim
+      config:
+        url: https://gateway-apim-2.conductor.com.br
+        apiSuffix: /apim/cache      
+    keyvault-apim-2:
+      type: keyVault
+      config:
+        dataSource: keyvault-apim-2
+
+  caches:
+    redis:
+      type: redis
+      config:
+        host: redis:6379
+
+enviroments:
+  values:
+    CHECKPOINT_KEYVAULT_URL: ${keyVault_url}
+    DATASOURCE_KEYVAULT_URL: ${keyVault_url}
+    CONNECTOR_APIM_URL: ${apim_url}
+    SERVER_CORS_ORIGINS: ${apim_url}
+  secrets:
+    AZURE_CLIENT_ID: ${client_id}
+    AZURE_TENANT_ID: ${tenant_id}
+    AZURE_CLIENT_SECRET: ${client_secret}
+    AZURE_SUBSCRIPTION_ID: ${subscription_id}
+    SERVER_AUTHENTICATION_APIKEY: ${authentication_key}
+    SERVICES_APIM-1_CONFIG_SUBSCRIPTIONKEY: ${apim_subscription_primary}
+    SERVICES_APIM-2_CONFIG_SUBSCRIPTIONKEY: ${apim_subscription_secondary}
+    DATASOURCE_SERVICES_SENSEDIA_CONFIG_AUTH: ${auth_sensedia}
+    CACHES_REDIS_CONFIG_KEY: ${key_salt}
+
+redis:
+  enabled: true
+  replicas: 3
+  cluster: true  

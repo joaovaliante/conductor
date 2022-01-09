@@ -1,0 +1,11 @@
+controller:
+  ingressClass: nginx-heimdall
+  extraArgs: 
+    https-port: 50085
+
+  containerPort:
+    https: 50085    
+
+  service:
+    ports:
+      https: 50085

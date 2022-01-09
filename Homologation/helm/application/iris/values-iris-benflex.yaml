@@ -1,0 +1,17 @@
+replicas: 1
+
+image: ${image}
+version: ${version}
+
+service:
+  type: LoadBalancer
+  port: 5000
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+registry:
+  servers:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: ${registry_password}

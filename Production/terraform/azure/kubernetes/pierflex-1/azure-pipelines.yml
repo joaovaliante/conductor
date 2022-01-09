@@ -1,0 +1,45 @@
+trigger: none
+
+variables:
+  - group: kubernetes-base
+  - group: production-azure
+  - group: vnext-base
+  - group: production-kubernetes
+  - group: csp-pierflex-1
+  - group: production-account
+  - group: production-aggregator
+  - group: production-bankslip
+  - group: production-billing
+  - group: production-control
+  - group: production-cipher
+  - group: production-datahub-master
+  - group: production-events
+  - group: production-embossing
+  - group: production-exchange
+  - group: production-falcon-card-connector
+  - group: production-falcon-connector
+  - group: production-issuer
+  - group: production-operation
+  - group: production-orchestrator
+  - group: production-person
+  - group: production-piercards
+  - group: production-product
+  - group: production-statement
+  - group: production-transaction
+  - group: production-vhub
+
+
+stages:
+  - template: ../../../../templates/terraform.yaml
+    parameters:
+      directory: ./terraform/$(CLOUD)/kubernetes/$(PROJECT_NAME)
+      jobEnvironment: "$(JOB_ENVIRONMENT)"
+      environment: "$(ENVIRONMENT)"
+      stateName: "Infrastructure"
+  
+  - template: ../../../../templates/terraform.yaml
+    parameters:
+      directory: ./terraform/application/$(PROJECT_NAME)
+      jobEnvironment: "$(JOB_ENVIRONMENT)"
+      environment: "$(ENVIRONMENT)"
+      stateName: "Application"

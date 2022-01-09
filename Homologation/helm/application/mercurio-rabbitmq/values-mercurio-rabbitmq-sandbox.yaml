@@ -1,0 +1,41 @@
+push: 
+  enabled: false
+
+sms: 
+  enabled: false
+
+redis:
+  enabled: false  
+
+rabbitmq:
+  enabled: true
+  image: "conductorcr.azurecr.io/mercurio-hmlg/mercurio-rabbitmq"
+  version: "38965"
+
+  enviroments:    
+    # non sensitive variables
+    values: 
+      RABBITMQ_ADDRESS: "rabbitmq.rabbitmq-default"
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: "guest"
+      RABBITMQ_PASSWORD: "guest"
+      RABBITMQ_VIRTUALHOST: "mercurio-rabbitmq"
+      RABBITMQ_SKIP_TLS_VERIFY: "true"
+      DB_HOST: #{DB_HOST}#
+      DB_PORT: 1433
+      DB_DATABASE: #{DB_DATABASE}#
+      DB_USER: #{DB_USER}#
+      DB_SKIP_TLS_VERIFY: "true"
+      DB_SELECT_TIMEOUT: 610s
+      DB_UPDATE_TIMEOUT: 610s
+      WORKER_SLEEP_DURATION: 10s
+    # sensitive variables
+    secrets:
+      DB_PASSWORD: #{DB_PASSWORD}#
+
+registry:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: #{REGISTRY_PASSWORD}#
+    

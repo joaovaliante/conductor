@@ -1,0 +1,16 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: pier-kafka-splunk
+  labels:
+    strimzi.io/cluster: pier-kafka-splunk
+spec:
+  class: com.splunk.kafka.connect.SplunkSinkConnector
+  tasksMax: ${max_task}
+  config:
+    topics: logs-pier
+    splunk.hec.uri: ${splunk_uri}
+    splunk.hec.ssl.validate.certs: "false"
+    splunk.hec.token: ${splunk_token}
+    splunk.sources: ${splunk_source}
+    splunk.sourcetypes: ${splunk_sourcetype}

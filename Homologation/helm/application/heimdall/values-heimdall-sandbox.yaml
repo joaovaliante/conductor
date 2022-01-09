@@ -1,0 +1,108 @@
+api:
+  replicas: 1
+  image: "conductorcr.azurecr.io/heimdall-api-hmlg/heimdall-api"
+  version: "2.7.3-SNAPSHOT"
+
+  nodeSelector:
+    ${node_name}: "true"
+
+  enviroments:
+    values:
+      HEIMDALL_DATASOURCE_DATABASETYPE: "SQLServer"
+      HEIMDALL_DATASOURCE_DATASOURCECLASSNAME: "com.microsoft.sqlserver.jdbc.SQLServerDataSource"
+      HEIMDALL_DATASOURCE_PORTNUMBER: "1433"
+      HEIMDALL_REDIS_CLUSTERENABLED: "false"
+      HEIMDALL_REDIS_PORT: "6379"
+      HEIMDALL_TRACE_PRINTALLTRACE: "false"
+      SPRING_JPA_DATABASE: "SQL_SERVER"
+      SPRING_JPA_DATABASE-PLATFORM: "org.hibernate.dialect.SQLServer2012Dialect"
+      SPRING_JPA_SHOW_SQL: "false"
+      SPRING_PROFILES_ACTIVE: "hmlg"
+      SPRING_RABBITMQ_HOST: "rabbitmq.rabbitmq-default"
+      SPRING_RABBITMQ_PORT: "5672"
+      ZUUL_FILTER_ROOT: "/tmp/interceptores"
+
+  service:
+    type: LoadBalancer
+    ports:
+      - name: 9090tcp
+        targetPort: 9090
+    labels:
+      app: heimdall-api
+
+frontend:
+  replicas: 1
+  image: "conductorcr.azurecr.io/heimdall-frontend-hmlg/heimdall-frontend"
+  version: "2.7.3-SNAPSHOT"
+
+  nodeSelector:
+    ${node_name}: "true"
+
+  enviroments:
+    values:
+      REACT_APP_API: "/v1/api"
+      REACT_APP_PORT: "9090"
+      REACT_APP_SCHEME: "HTTP"
+      REACT_APP_VERSION: "1.3.0"
+  
+  service:
+    type: LoadBalancer
+    ports:
+      - name: 5000tcp
+        targetPort: 5000
+    labels:
+      app: heimdall-frontend
+      
+gateway:
+  replicas: 1
+  image: conductorcr.azurecr.io/heimdall-gateway-hmlg/heimdall-gateway
+  version: "2.7.3-SNAPSHOT"
+
+  nodeSelector:
+    ${node_name}: "true"
+
+  enviroments:
+    values:
+      HEIMDALL_DATASOURCE_DATABASETYPE: "SQLServer"
+      HEIMDALL_DATASOURCE_DATASOURCECLASSNAME: "com.microsoft.sqlserver.jdbc.SQLServerDataSource"
+      HEIMDALL_DATASOURCE_PORTNUMBER: "1433"
+      HEIMDALL_REDIS_CLUSTERENABLED: "false"
+      HEIMDALL_REDIS_PORT: "6379"
+      HEIMDALL_TRACE_PRINTALLTRACE: "false"
+      SPRING_JPA_DATABASE: "SQL_SERVER"
+      SPRING_JPA_DATABASE-PLATFORM: "org.hibernate.dialect.SQLServer2012Dialect"
+      SPRING_JPA_SHOW_SQL: "false"
+      SPRING_PROFILES_ACTIVE: "hmlg"
+      SPRING_RABBITMQ_HOST: "rabbitmq.rabbitmq-default"
+      SPRING_RABBITMQ_PORT: "5672"
+
+  autoScale:
+    enabled: true 
+    minReplicas: 1
+    maxReplicas: 3
+
+  service:
+    type: LoadBalancer
+    ports:
+      - name: 8080tcp
+        targetPort: 8080
+    labels:
+      app: heimdall-gateway
+    annotations:
+      cloud.google.com/load-balancer-type: Internal
+      networking.gke.io/internal-load-balancer-allow-global-access: "true"
+        
+registry:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: #{REGISTRY_PASSWORD}#
+
+redis:
+  enabled: true
+  name: "redis"
+  namespace:
+    create: true
+
+rabbitmq:
+  enabled: false

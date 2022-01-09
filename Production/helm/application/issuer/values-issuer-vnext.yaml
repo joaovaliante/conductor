@@ -1,0 +1,35 @@
+replicas: 0
+image:  conductorcr.azurecr.io/prepaid/issuer
+version: ${version}
+enviroments:
+  values: 
+    CACHE_ENABLED: true
+    CACHE_ENTITIES_TENANT: true
+    DATABASE_CONNECTIONURI: #{ISSUER_VNEXT_PROD_DATABASE_CONNECTIONURI}#
+    DATABASE_SHOWSQL: false
+    LOG_LEVEL: info
+    LOG_SPLUNK: true
+    SPLUNK_DIAL: #{ISSUER_VNEXT_PROD_SPLUNK_DIAL}#
+    SWAGGER_IP: #{ISSUER_VNEXT_PROD_SWAGGER_IP}#
+    SWAGGER_PORT: 80
+  secrets:
+    DATABASE_PASSWORD: #{ISSUER_VNEXT_PROD_DATABASE_PASSWORD}#
+    DATABASE_USER: #{ISSUER_VNEXT_PROD_DATABASE_USER}#
+
+resources:
+  limits:
+    cpu: 4
+    memory: 512Mi
+  requests: 
+    cpu: 100m
+    memory: 256Mi
+
+registry:
+  servers:
+    - name: conductorcr
+      server: conductorcr.azurecr.io
+      username: conductorcr
+      password: #{REGISTRY_PASSWORD}#
+
+istio:
+  enabled: true 

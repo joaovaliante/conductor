@@ -1,0 +1,80 @@
+replicas: 2
+
+enviroments:
+  secrets:
+    EVENT_HUB_PASSWORD_PRIMARY: ${event_hub_password_principal}
+    EVENT_HUB_PASSWORD_SECONDARY: ${event_hub_password_secondary}
+
+streams: 
+  az1p-gateway-appgw.yaml:
+    input:
+      kafka:
+        addresses:
+          - az1p-eventhub-apim.servicebus.windows.net:9093
+        topics:
+          - logs-appgw-raw
+        consumer_group: benthos
+        tls:
+          enabled: true
+          skip_cert_verify: true
+        sasl:
+          mechanism: PLAIN
+          user: $ConnectionString
+          password: "$${EVENT_HUB_PASSWORD_PRIMARY}"
+    pipeline:
+      processors:
+        - bloblang: |
+            root = this.records
+        - unarchive:
+            format: json_array
+        - bloblang: |
+            root = this
+            root.region = "Brazil South"
+    output:
+      kafka:
+        addresses:
+          - az1p-eventhub-apim.servicebus.windows.net:9093
+        topic: logs-appgw
+        tls:
+          enabled: true
+          skip_cert_verify: true
+        sasl:
+          mechanism: PLAIN
+          user: $ConnectionString
+          password: "$${EVENT_HUB_PASSWORD_PRIMARY}"
+  az3p-gateway-appgw.yaml:
+    input:
+      kafka:
+        addresses:
+          - az3p-eventhub-apim.servicebus.windows.net:9093
+        topics:
+          - logs-appgw-raw
+        consumer_group: benthos
+        tls:
+          enabled: true
+          skip_cert_verify: true
+        sasl:
+          mechanism: PLAIN
+          user: $ConnectionString
+          password: "$${EVENT_HUB_PASSWORD_SECONDARY}"
+    pipeline:
+      processors:
+        - bloblang: |
+            root = this.records
+        - unarchive:
+            format: json_array
+        - bloblang: |
+            root = this
+            root.region = "Brazil Southeast"
+    output:
+      kafka:
+        addresses:
+          - az3p-eventhub-apim.servicebus.windows.net:9093
+        topic: logs-appgw
+        tls:
+          enabled: true
+          skip_cert_verify: true
+        sasl:
+          mechanism: PLAIN
+          user: $ConnectionString
+          password: "$${EVENT_HUB_PASSWORD_SECONDARY}"

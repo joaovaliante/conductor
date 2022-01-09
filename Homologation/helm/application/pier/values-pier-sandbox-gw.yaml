@@ -1,0 +1,41 @@
+replicas: 1
+image: ${pier_image}
+
+autoScale:
+  maxReplicas: 5
+
+registry:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: #{REGISTRY_PASSWORD}#
+
+service:
+  type: LoadBalancer
+  port: 8181
+  annotations:
+    cloud.google.com/load-balancer-type: Internal
+    networking.gke.io/internal-load-balancer-allow-global-access: "true"   
+  
+
+enviroments:
+  # non sensitive variables
+  values: 
+    LOGGING_LEVEL_BR_COM_CONDUCTOR: INFO
+    MANAGEMENT_HEALTH_MAIL_ENABLED: "false" 
+    PIER_DATASOURCE_PIER_DATABASENAME: "PIER_SANDBOX_V2" 
+    PIER_ENCRYPT_ENABLED: "true"
+    PIER_RABBIT_HOST: rabbitmq.rabbitmq-default
+    PIER_RABBIT_PORT: "5672"
+    PIER_REDIS_HOST: redis.redis-default
+    PIER_REDIS_PORT: "6379"
+    PIER_WSDL_PORTALWS: http://10.8.3.65:25781/Portal_WS.asmx?wsdl
+    PIER_REGISTROONLINE_CACERTS: "/usr/local/openjdk-15/lib/security/cacerts"
+    SPRING_PROFILES_ACTIVE: hmlg
+    TZ: America/Recife
+
+redis:
+  enabled: redis
+
+rabbitmq:
+  enabled: enabled

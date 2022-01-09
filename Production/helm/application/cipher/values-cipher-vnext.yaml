@@ -1,0 +1,45 @@
+replicas: 0
+image:  conductorcr.azurecr.io/vnext/cipher
+version: ${version}
+enviroments:
+  values: 
+    CIPHER_HAZELCAST_KUBERNETES_ENABLED: true
+    CIPHER_HAZELCAST_KUBERNETES_NAMESPACE: cipher
+    CIPHER_HAZELCAST_KUBERNETES_SERVICENAME: hazelcast
+    CIPHER_HAZELCAST_MANAGEMENT_ENABLED: false 
+    CIPHER_SPLUNK_BATCHINTERVAL: 1
+    CIPHER_SPLUNK_BATCHSIZEBYTES: 10000
+    CIPHER_SPLUNK_BATCHSIZECOUNT: 10
+    CIPHER_SPLUNK_DISABLECERTIFICATEVALIDATION: true
+    CIPHER_SPLUNK_ENABLED: true
+    CIPHER_SPLUNK_RETRIESONERROR: 10
+    CIPHER_SPLUNK_SENDMODE: parallel
+    CIPHER_SPLUNK_SOURCE: vnext
+    CIPHER_SPLUNK_SOURCETYPE: _json
+    CIPHER_SPLUNK_URL: #{CIPHER_VNEXT_PROD_CIPHER_SPLUNK_URL}#
+    INFO_APP_NAME: "Cipher vNext"
+    SPRING_DATASOURCE_URL: #{CIPHER_VNEXT_PROD_SPRING_DATASOURCE_URL}#
+    SPRING_PROFILES_ACTIVE: producao
+  secrets:
+    CIPHER_SPLUNK_TOKEN: #{CIPHER_VNEXT_PROD_CIPHER_SPLUNK_TOKEN}#
+    SPRING_DATASOURCE_USERNAME: #{CIPHER_VNEXT_PROD_SPRING_DATASOURCE_USERNAME}#
+
+resources:
+  limits:
+    cpu: 4
+    memory: 512Mi
+  requests: 
+    cpu: 100m
+    memory: 256Mi
+
+registry:
+  - name: conductorcr
+    server: conductorcr.azurecr.io
+    username: conductorcr
+    password: #{REGISTRY_PASSWORD}#
+cache:
+  hazelcast:
+    enabled: true
+
+istio:
+  enabled: true 
